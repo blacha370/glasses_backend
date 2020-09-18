@@ -1,0 +1,55 @@
+.order {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.order__list {
+    padding-left: 5vw;
+    font-size: 20px;
+    font-weight: bold;
+    align-self: center;
+}
+.order__element {
+    padding: 4px 0;
+}
+.form {
+    display: flex;
+    flex-direction: column;
+}
+.form textarea {
+    resize: none;
+    height: 100px;
+    width: 100%;
+    font-family: Verdana;
+    padding: 10px;
+    font-size: 16px;
+    margin: 5px 0;
+}
+.form__submit {
+    width: 50px;
+    align-self: flex-end;
+}
+.statuses {
+    grid-column: 1 / -1
+}
+.statuses__state {
+    margin-top: 10px;
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    justify-content: space-between;
+}
+.statuses__item--head {
+    font-weight: bold;
+}
+.statuses__op {
+    font-weight: bold;
+}
+.statuses__status {
+    text-align: center;
+}
+.statuses__date {
+    font-size: 12px;
+}

@@ -1,0 +1,37 @@
+.inbox {
+    width: calc(100% - 40px);
+    height: 100%;
+    margin: 0 20px;
+    font-size: 20px;
+    background: #f0f0f0;
+}
+.inbox__element {
+    padding: 10px 0 10px 10px;
+}
+.inbox__thread {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    padding: 5px 0;
+    border-top: 1px black dashed;
+}
+.inbox__item {
+    width: 200px;
+    flex-grow: 1;
+}
+.inbox__link {
+    display: block;
+    font-weight: bold;
+    color: #512645;
+    transition: 01.s color linear;
+    text-align: center;
+}
+.inbox__link:hover {
+    color: #b54026;
+}
+.no_messages__div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

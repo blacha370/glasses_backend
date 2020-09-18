@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+            {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'page/new_message.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar__list">
+            <li class="navbar__item"><a class="navbar__link" href="{% url 'logout_user' %}">Logout</a></li>
+            <li class="navbar__item"><a class="navbar__link" href="{% url 'orders_admin' 1 %}">Zamówienia</a></li>
+            <li class="navbar__item"><a class="navbar__link" href="{% url 'archive_admin' 1 %}">Zrealizowane zamówienia</a></li>
+            <li class="navbar__item"><a class="navbar__link" href="{% url 'inbox' %}">Wiadomości</a></li>
+        </ul>
+    </nav>
+    <section class="section">
+        <form class="form" action="{% url 'add_new_message' %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input clas="form__submit" type="submit" value="Wyślij">
+        </form>
+    </section>
+</body>
+</html>

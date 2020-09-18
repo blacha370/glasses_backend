@@ -1,0 +1,44 @@
+.thread {
+    width: calc(100% - 40px);
+    height: 100%;
+    margin: 0 20px;
+    font-size: 20px;
+}
+.message {
+    margin-top: 10px;
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 10px;
+}
+.message__info {
+    display: flex;
+    justify-content: space-between;
+}
+.message__op {
+    font-weight: bold;
+}
+.message_date {
+    font-size: 12px;
+}
+.form {
+    width: 40%;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+}
+.form textarea {
+    resize: none;
+    height: 100px;
+    width: 100%;
+    font-family: Verdana;
+    padding: 10px;
+    font-size: 16px;
+    margin: 5px 0;
+}
+.form label {
+    display: none;
+}
+.form__submit {
+    width: 50px;
+    align-self: flex-end;
+}
