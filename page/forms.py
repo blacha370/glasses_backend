@@ -1,6 +1,5 @@
 from django import forms
 from .models import ActiveOrder
-from django.contrib.auth.models import Group
 
 
 class StatusForm(forms.Form):
@@ -23,7 +22,7 @@ class AddMessageForm(forms.Form):
 
 
 class AddMessageExtForm(forms.Form):
-    choices = Group.objects.exclude(name='prod_admin').values_list()
+    choices = ['Pomoc_techniczna', 'Administracja', 'Mariusz', 'Szymon', 'Besart', 'Kasia', 'Druk']
     reciever = forms.ChoiceField(label='', widget=forms.Select, choices=choices)
     message_subject = forms.CharField(max_length=20, label='Temat')
     message_text = forms.CharField(max_length=200, widget=forms.Textarea, label="Wiadomość")

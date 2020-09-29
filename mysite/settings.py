@@ -15,7 +15,7 @@ SECRET_KEY = 'vnh3h8nq*)-tp+bbl+u@)(ou=%9e(xike0g$mrlbt_@f00x5x='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['https://connection-system>.herokuapp.com', '127.0.0.1']
 
 ADMINS = [('Lukasz', 'lukasz.blacha370@gmail.com')]
 
@@ -90,7 +90,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-# AUTHENTICATION_BACKENDS = ('page.backends.UserManager',)
 
 LANGUAGE_CODE = 'en-us'
 
@@ -116,5 +115,3 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-
