@@ -1,4 +1,3 @@
-release: python .manage.py makemigrations
-release: python .manage.py migrate auth
-release: python .manage.py migrate
+release: python manage.py migrate auth
+release: python manage.py migrate
 web: gunicorn mysite.wsgi --log-file -
