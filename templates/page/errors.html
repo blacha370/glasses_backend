@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Błąd</title>
+            {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'page/errors.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar__list">
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'logout_user' %}">Wyloguj</a>
+            </li>
+            <li class="navbar__item">
+                <a href="{% url 'orders_admin' 1 %}" class="navbar__link">Zamówienia</a>
+            </li>
+            {% if notification > 0 %}
+            <li class="navbar__item">
+                <a class="navbar__link navbar__link--new" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% else %}
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    <section class="box">
+        {% for error in errors %}
+            <p class="box__error">{{error}}</p>
+        {% endfor %}
+    </section>
+    <footer class="footer">
+        <p class="footer__text">{{ request.user.username }}</p>
+    </footer>
+</body>
+</html>

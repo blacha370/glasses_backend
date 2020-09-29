@@ -1,17 +1,41 @@
 .order {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     margin: 20px;
     padding: 10px;
     background: #f0f0f0;
     border-radius: 10px;
+    font-size: 32px;
 }
 .order__info {
     padding: 5px;
+    color: #413f3d;
+    height: 100%;
+}
+.order__info__link {
+    color: #194f92;
+    height: 100%;
+}
+.order__info--link:hover {
+    color: #697184;
 }
 .order__span {
     font-weight: bold;
 }
 .order__button {
-    padding: 5px;
+  border: none;
+  background: #697181;
+  color: #f2f1ef;
+  border-radius: 10px;
+  font-size: 24px;
+  font-family: Arial;
+  font-weight: bold;
+  padding: 5px;
+}
+.order__button:hover {
+    background: #413f3d;
 }
 .order__link--btn {
     padding: 0px;

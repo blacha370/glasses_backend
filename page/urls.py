@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
     path('', views.index, name='index'),
     path('orders/<int:current_page>/a/', views.admin_orders, name='orders_admin'),
@@ -19,5 +18,8 @@ urlpatterns = [
     path('change/<int:order_id>/', views.change, name='change'),
     path('change_confirmed/<int:order_id>/<str:order_status>', views.change_confirmation, name="change_confirmed"),
     path('l/', views.login_user, name='login_user'),
-    path('o/', views.logout_user, name='logout_user')
+    path('o/', views.logout_user, name='logout_user'),
+    path('add_user/', views.add_user, name='add_user'),
+    path('archive/', views.archive_inbox, name='archive_inbox'),
+    path('archive/<str:message_topic>/<int:current_page>', views.archive_thread, name='archive_thread')
 ]
