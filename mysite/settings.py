@@ -1,6 +1,8 @@
 from pathlib import Path
+import django_heroku
 import dj_database_url
 import os
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,9 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'vnh3h8nq*)-tp+bbl+u@)(ou=%9e(xike0g$mrlbt_@f00x5x='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['https://connection-system>.herokuapp.com', '127.0.0.1']
 
 ADMINS = [('Lukasz', 'lukasz.blacha370@gmail.com')]
 
@@ -50,17 +52,17 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.static',
             ],
             'loaders': [
                 (
                     'django.template.loaders.filesystem.Loader',
                     [BASE_DIR / 'templates'],
                 ),
-            ],
+            ]
         },
     },
 ]
@@ -73,9 +75,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -102,13 +101,17 @@ USE_L10N = True
 
 USE_TZ = False
 
-STATIC_URL = '/static/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 LOGIN_URL = '/'
 
 CSRF_COOKIE_SECURE = True
 
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
+
+django_heroku.settings(locals())
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')

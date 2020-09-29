@@ -11,7 +11,7 @@
     <nav class="navbar">
         <ul class="navbar__list">
             <li class="navbar__item">
-                <a class="navbar__link" href="{% url 'logout_user' %}">Wyloguj</a>
+                <a class="navbar__link" href="{% url 'logout_user' %}">Logout</a>
             </li>
             <li class="navbar__item">
                 <a class="navbar__link" href="{% url 'orders_admin' 1 %}">Zamówienia</a>
@@ -37,8 +37,5 @@
             <input clas="form__submit" type="submit" value="Wyślij">
         </form>
     </section>
-    <footer class="footer">
-        <p class="footer__text">{{ request.user.username }}</p>
-    </footer>
 </body>
 </html>

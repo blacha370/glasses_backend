@@ -1,0 +1,35 @@
+.order_table {
+    display: flex;
+    flex-direction: column;
+}
+.order_table__row {
+    display: grid;
+    grid-template-columns: repeat(4, 25%);
+    padding: 5px 10px;
+    border-bottom: 1px dashed black;
+}
+.order_table__row--head {
+    background: #f2f1ef;
+}
+.order_table__row--item {
+    background: #f2f1ef;
+}
+.order_table__row--head .order_table__element {
+    font-weight: bold;
+    color: #413f3d;
+}
+.order_table__element {
+    text-align: center;
+    align-self: center;
+}
+.order_table__link {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.no_orders__div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
