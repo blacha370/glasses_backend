@@ -90,6 +90,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+# AUTHENTICATION_BACKENDS = ('page.backends.UserManager',)
 
 LANGUAGE_CODE = 'en-us'
 
