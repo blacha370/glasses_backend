@@ -1,4 +1,6 @@
 from pathlib import Path
+import dj_database_url
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,6 +29,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -71,6 +74,9 @@ DATABASES = {
     }
 }
 
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -96,12 +102,13 @@ USE_L10N = True
 
 USE_TZ = False
 
-STATIC_URL = 'https://z4l.pl/Auftrag_szkielka/static/'
+STATIC_URL = '/static/'
 
-STATIC_ROOT = 'C:/Users/fltrade/Desktop/Strona-prod/mysite/static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGIN_URL = '/'
 
 CSRF_COOKIE_SECURE = True
 
-CONN_MAX_AGE = 60
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
