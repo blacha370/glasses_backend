@@ -1,0 +1,25 @@
+.form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    font-size: 30px;
+    display: grid;
+}
+.form label {
+    justify-self: end;
+    grid-column: 1;
+}
+.form input {
+    font-size: 30px;
+    grid-column: 2;
+}
+.form__submit {
+  display: block;
+  font-size: 24px;
+  font-family: Arial;
+  font-weight: bold;
+  color: #87314e;
+  border-radius: 10px;
+ }
