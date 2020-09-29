@@ -380,7 +380,7 @@ def add_new_message(request):
     elif request.method == 'POST':
         form = AddMessageExtForm(request.POST)
         if form.is_valid():
-            group_name = AddMessageExtForm.choices[int(form.cleaned_data['reciever'])-1][1]
+            group_name = AddMessageExtForm.choices[int(form.cleaned_data['reciever'])][1]
             print(group_name)
             try:
                 thread = MessagesThread.objects.get_or_create(subject=form.cleaned_data['message_subject'], defaults={
