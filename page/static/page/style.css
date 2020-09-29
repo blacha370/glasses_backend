@@ -25,8 +25,8 @@ img {
   height: auto;
 }
 body {
-    width: 100vw;
-    background: #e4e7ec;
+    width: 100%;
+    background: #F2F1EF;
 }
 ul.errorlist {
     display: none;
@@ -34,8 +34,8 @@ ul.errorlist {
 .navbar {
     display: block;
     width: 100%;
-    height: 30px;
-    background: #dddfe6;
+    height: 40px;
+    background: b1a6a4;
 }
 .navbar__list {
     width: 100%;
@@ -43,6 +43,7 @@ ul.errorlist {
     display: flex;
 }
 .navbar__item{
+    border: 1px solid #aba19f;
     width: 100%;
     height: 100%;
     text-align: center;
@@ -50,16 +51,36 @@ ul.errorlist {
 }
 .navbar__link {
     display: block;
+    background: #d8cfd0;
     width: 100%;
-    line-height: 30px;
+    line-height: 40px;
     height: 100%;
-    color: #87314e;
+    color: #413d3d;
     font-size: 20px;
     transition: background .1s linear;
 }
 .navbar__link:hover {
-    background: #b3b4b5;
-    color: #a6172d;
+    background: #b1a6a4;
+}
+@keyframes example {
+  from {
+   background: #ff5700;
+  }
+  50% {
+    background: #ff5700;
+    box-shadow: none;
+  }
+  to {
+    background: #f29513;
+    box-shadow: 0px 0px 20px 0px rgba(0,0,0,1);
+  }
+}
+.navbar__link--new {
+  animation-name: example;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  color: #413d3d;
 }
 .pagination {
     width: 100%;
@@ -67,15 +88,46 @@ ul.errorlist {
     justify-content: center;
 }
 .pagination__link {
+    border: 1px solid #aba19f;
     flex-basis: 200px;
     text-align: center;
     flex-grow: 1;
     font-size: 20px;
-    color: #87314e;
+    color: #413f3d;
+    background: #d8cfd0;
     padding: 5px;
-    border: 1px solid #e4e7ec;
 }
 .pagination__link--active:hover {
-    background: #dddfe6;
-    border: 1px solid #cbced6;
+    background: #b1a6a4;
+}
+.msg {
+    width: 30%;
+    margin: 5px auto;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    background: #d8cfd0;
+}
+.msg__text {
+    padding: 5px;
+    font-weight: bold;
+    font-size: 20px;
+    color: 413f3d;
+}
+.footer {
+    position: sticky;
+    bottom: 0px;
+    padding: 5px;
+    border-radius: 0 20px 20px 0;
+    width: 100px;
+    background: #d8cfd0;
+    border-top: 2px solid #aba19f;
+    border-right: 2px solid #aba19f;
+    border-bottom: 2px solid #aba19f;
+    margin-top: 3px;
+}
+.footer__text {
+    font-size: 16px;
+    display: block;
+    text-align: center;
 }

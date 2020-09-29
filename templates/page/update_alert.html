@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zmiana: {{order.order_number}}</title>
+        {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'page/update.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar__list">
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'logout_user' %}">Wyloguj</a>
+            </li>
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'orders' 1 %}">Zamówienia</a>
+            </li>
+            {% if notification > 0 %}
+            <li class="navbar__item">
+                <a class="navbar__link navbar__link--new" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% else %}
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    <section class="order">
+        <ul class="order__list">
+            <li class="order__info">Numer zamówienia: {{order.order_number}}</li>
+            <li class="order__info">Data: {{order.pub_date}}</li>
+            <li class="order__info">Etykieta:
+                <a class="order__info--link" target="_blank" href="https://z4l.pl/Auftrag_szkielka/{{order.order_number}}.pdf">{{order.order_number}}.pdf</a>
+            </li>
+            <li class="order__info">Auftrag:
+                <a class="order__info--link" class="order__link" target="_blank" href="https://z4l.pl/Auftrag_szkielka/Auftrag%20{{order.order_number}}.pdf">Auftrag {{order.order_number}}.pdf</a>
+            </li>
+            {% for status in order.order_statuses %}
+                {% if status.0 == order.order_status %}
+                    <li class="order__info">Obecny status:
+                        <span class="order__span">{{status.1}}</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% for status in order.order_statuses %}
+                {% if status.0 == new_state %}
+            <li class="order__info">Nowy status:
+                <span class="order__span">{{status.1}}</span>
+            </li>
+                {% endif %}
+            {% endfor %}
+            <li class="order__info">
+                <a class="order_info__link" href="https://z4l.pl/glass/{{order.image}}-1.jpg">
+                    <img src="https://z4l.pl/glass/{{order.image}}-1.jpg" width="144" height="144">
+                </a>
+            </li>
+        </ul>
+        <a class="order__link order__link--btn" href="{% url 'change_confirmed' order.id order.order_status%}">
+            <button class="order__button">Potwierdź</button>
+        </a>
+    </section>
+    <footer class="footer">
+        <p class="footer__text">{{ request.user.username }}</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>400</title>
+        {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'page/error.css' %}">
+</head>
+<body>
+    <div class="error">
+        <h1 class="error__header">400 Bad request</h1>
+        <a class="error__link" href="{% url 'index' %}">Powrót do strony</a>
+    </div>
+</body>
+</html>

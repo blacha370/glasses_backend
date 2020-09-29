@@ -1,9 +1,10 @@
 .inbox {
+    border-radius: 20px;
     width: calc(100% - 40px);
     height: 100%;
-    margin: 0 20px;
+    margin: 20px 20px;
     font-size: 20px;
-    background: #f0f0f0;
+    background: #d8cfd0;
 }
 .inbox__element {
     padding: 10px 0 10px 10px;
@@ -22,12 +23,36 @@
 .inbox__link {
     display: block;
     font-weight: bold;
-    color: #512645;
+    color: #194f92;
     transition: 01.s color linear;
     text-align: center;
 }
 .inbox__link:hover {
-    color: #b54026;
+    color: #697184;
+}
+.inbox__link--thread {
+    text-align: left;
+    padding-left: 30px;
+}
+@keyframes example {
+  from {
+    color: #f29513;
+  }
+  50% {
+    color: #f29513;
+    text-shadow: none;
+  }
+  to {
+  color: #ff5700;
+  text-shadow: 0px 0px 10px #454545;
+  }
+}
+.inbox__link--new {
+  animation-name: example;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  color: #ff5700;
 }
 .no_messages__div {
   position: absolute;

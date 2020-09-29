@@ -9,9 +9,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'vnh3h8nq*)-tp+bbl+u@)(ou=%9e(xike0g$mrlbt_@f00x5x='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
+
+ADMINS = [('Lukasz', 'lukasz.blacha370@gmail.com')]
 
 INSTALLED_APPS = [
     'page.apps.PageConfig',
@@ -35,17 +37,26 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'mysite.urls'
 
+handler404 = 'page.views.page_not_found'
+handler500 = 'page.views.error'
+handler403 = 'page.views.permission_denied'
+handler400 = 'page.views.bad_request'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.static',
+            ],
+            'loaders': [
+                (
+                    'django.template.loaders.filesystem.Loader',
+                    [BASE_DIR / 'templates'],
+                ),
             ],
         },
     },
@@ -77,14 +88,20 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Etc/GMT-2'
+TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
-STATIC_URL = '/static/'
+STATIC_URL = 'https://z4l.pl/Auftrag_szkielka/static/'
+
+STATIC_ROOT = 'C:/Users/fltrade/Desktop/Strona-prod/mysite/static'
 
 LOGIN_URL = '/'
+
+CSRF_COOKIE_SECURE = True
+
+CONN_MAX_AGE = 60

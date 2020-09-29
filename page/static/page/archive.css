@@ -4,22 +4,23 @@
 }
 .order_table__row {
     display: grid;
-    grid-template-columns: repeat(3, 33%);
+    grid-template-columns: repeat(4, 25%);
     padding: 5px 10px;
     border-bottom: 1px dashed black;
 }
 .order_table__row--head {
-    background: #f0f5f9;
+    background: #f2f1ef;
 }
 .order_table__row--item {
-    background: #f0f0f0;
+    background: #f2f1ef;
 }
 .order_table__row--head .order_table__element {
     font-weight: bold;
-    color: #512645;
+    color: #413f3d;
 }
 .order_table__element {
     text-align: center;
+    align-self: center;
 }
 .order_table__link {
     display: block;

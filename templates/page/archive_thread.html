@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{messages_thread.0.thread.subject}}</title>
+        {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'page/thread.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar__list">
+            <li class="navbar__item">
+                <a href="{% url 'logout_user' %}" class="navbar__link">Wyloguj</a>
+            </li>
+            <li class="navbar__item">
+                <a href="{% url 'orders_admin' 1 %}" class="navbar__link">Zamówienia</a>
+            </li>
+            {% if notification > 0 %}
+            <li class="navbar__item">
+                <a class="navbar__link navbar__link--new" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% else %}
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% if prev_page >= 1 or next_page  > 1%}
+        <aside class="pagination">
+            {% if prev_page >= 1%}
+            <a class="pagination__link pagination__link--active" href="{% url 'message' messages_thread.0.thread.id prev_page %}">Nowsze</a>
+            {% else %}
+            <div class="pagination__link"></div>
+            {% endif %}
+            {% if next_page > 1 %}
+            <a class="pagination__link pagination__link--active" href="{% url 'message' messages_thread.0.thread.id next_page %}">Starsze</a>
+            {% else %}
+            <div class="pagination__link"></div>
+            {% endif %}
+        </aside>
+    {% endif %}
+    <section class="thread">
+        <h1 class="thread__topic">Temat: {{ messages_thread.0.thread.subject }}</h1>
+        {% for message in messages_thread reversed %}
+        <div class="thread__message message">
+            <div class="message__info">
+                <p class="message__op">{{message.message_op}}</p>
+                <p class="message_date">{{message.message_date}}</p>
+            </div>
+            <p class="message__text">{{message.message_text}}</p>
+        </div>
+        {% endfor %}
+    </section>
+    <footer class="footer">
+        <p class="footer__text">{{ request.user.username }}</p>
+    </footer>
+</body>
+</html>

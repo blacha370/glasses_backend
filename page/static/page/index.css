@@ -1,13 +1,9 @@
-body {
-    width: 100vw;
-    height: 100vh;
-}
 .login {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #b3b4b5;
+  background: #d8cfd0;
   border-radius: 10px;
   width: 300px;
   height: 150px;
@@ -26,14 +22,15 @@ form {
     height: 30px;
 }
 .login__form label {
-    padding-top: 6px;
-   display: block;
-  font-size: 16px;
+  padding-top: 6px;
+  display: block;
+  font-size: 20px;
   font-family: Arial;
   font-weight: bold;
-  color: #87314e;
+  color: #413F3D;
 }
 .login__form input {
+  border: 2px solid #697181;
   border-radius: 10px;
   padding-left: 10px;
   outline: none;
@@ -43,10 +40,12 @@ form {
   background: #e4e7ec;
  }
 .login__submit {
-    grid-area: 3 / 2 / 4 / 3;
-      font-size: 16px;
+  grid-area: 3 / 2 / 4 / 3;
+  font-size: 16px;
   font-family: Arial;
   font-weight: bold;
-  color: #87314e;
+  border: none;
+  background: #697181;
+  color: #f2f1ef;
   border-radius: 10px;
 }

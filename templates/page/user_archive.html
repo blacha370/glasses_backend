@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zrealizowane zamówienia</title>
+        {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'page/archive.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar__list">
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'logout_user' %}">Wyloguj</a>
+            </li>
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'orders' 1 %}">Zamówienia</a>
+            </li>
+            {% if notification > 0 %}
+            <li class="navbar__item">
+                <a class="navbar__link navbar__link--new" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% else %}
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% if archive_order_list or archive_order_list2 %}
+    {% if prev_page >= 1 or next_page  > 1%}
+        <aside class="pagination">
+            {% if prev_page >= 1%}
+                <a class="pagination__link pagination__link--active" href="{% url 'archive' prev_page %}">Poprzednia strona</a>
+            {% else %}
+                <div class="pagination__link"></div>
+            {% endif %}
+            {% if next_page > 1 %}
+                <a class="pagination__link pagination__link--active" href="{% url 'archive' next_page %}">Następna strona</a>
+            {% else %}
+            <div class="pagination__link "></div>
+            {% endif %}
+        </aside>
+    {% endif %}
+        <section class="order_table">
+            <ul class="order_table__row order_table__row--head">
+                <li class="order_table__element">Data</li>
+                <li class="order_table__element">Data zrealizowania</li>
+                <li class="order_table__element">Numer</li>
+                <li class="order_table__element">Zdjęcie</li>
+            </ul>
+            {% for order in archive_order_list %}
+                <ul class="order_table__row order_table__row--item">
+                    <li class="order_table__element">{{order.pub_date}}</li>
+                    <li class="order_table__element">{{order.unactivation_date}}</li>
+                    <li class="order_table__element">{{order.order_number}}</li>
+                    <li class="order_table__element">
+                        <a class="order_table__link" target="_blank" href="https://z4l.pl/glass/{{order.image}}-1.jpg">
+                            <img src="https://z4l.pl/glass/{{order.image}}-1.jpg" width="144" height="144">
+                        </a>
+                    </li>
+                </ul>
+            {% endfor %}
+        </section>
+    {% else %}
+        <div>
+            <h1>Brak zrealizowanych zamówień</h1>
+        </div>
+    {% endif %}
+    <footer class="footer">
+        <p class="footer__text">{{ request.user.username }}</p>
+    </footer>
+</body>
+</html>

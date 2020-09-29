@@ -4,33 +4,31 @@
 }
 .order_table__row {
     display: grid;
-    grid-template-columns: repeat(5, 20%);
+    grid-template-columns: repeat(7, calc(100%/7));
     padding: 5px 10px;
         border-bottom: 1px dashed black;
 }
 .order_table__row--head {
-    background: #f0f5f9;
+    background: #f2f1ef;
 }
 .order_table__row--head .order_table__element {
     font-weight: bold;
-    color: #512645;
+    color: #413f3d;
 }
 .order_table__row--1 {
-    background: #f0f0f0;
+    background: #e86e4d;
 }
 .order_table__row--2 {
-    background: #c9c9c9;
+    background: #fae087;
 }
 .order_table__row--3 {
-    background: #add1ff;
-}
-.order_table__row--4 {
-    background: #fae59d;
-}
-.order_table__row--5 {
     background: #addead;
 }
+.order_table__row--5 {
+    background: #eb3909;
+}
 .order_table__element {
+    align-self: center;
     display: block;
     padding: 0;
     text-align: center;
@@ -40,9 +38,32 @@
     margin: auto;
 }
 .order_table__link {
+    color: #194f92;
     display: block;
     width: 100%;
     height: 100%;
+}
+.order_table__divide {
+    color: #413d3d;
+    font-weight: bold;
+}
+.add_orders_form {
+    margin: 5px;
+    display: flex;
+    justify-content: flex-end;
+}
+.add_order_form__button {
+  border: none;
+  background: #697181;
+  color: #f2f1ef;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: Arial;
+  font-weight: bold;
+  padding: 5px;
+}
+.add_order_form__button:hover {
+    background: #413f3d;
 }
 .no_orders__div {
   position: absolute;
