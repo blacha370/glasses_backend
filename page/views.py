@@ -243,11 +243,9 @@ def inbox(request):
     if request.user.groups.filter(name='administracja'):
         message_threads = set()
         for group in request.user.groups.all():
-            if len(message_threads) == 0:
-                message_threads = MessagesThread.objects.filter(reciever=group).order_by('subject')
-            else:
-                message_threads.union(message_threads, MessagesThread.objects.filter(
-                    reciever=group).order_by('subject'))
+            for thread in MessagesThread.objects.filter(reciever=group).order_by('subject'):
+                message_threads.add(thread)
+        print(message_threads)
     else:
         message_threads = MessagesThread.objects.filter(creator=request.user.groups.exclude(
             name='administracja')[0]).order_by('subject')
@@ -380,8 +378,7 @@ def add_new_message(request):
     elif request.method == 'POST':
         form = AddMessageExtForm(request.POST)
         if form.is_valid():
-            group_name = AddMessageExtForm.choices[int(form.cleaned_data['reciever'])][1]
-            print(group_name)
+            group_name = AddMessageExtForm.choices[int(form.cleaned_data['reciever'])-1][1]
             try:
                 thread = MessagesThread.objects.get_or_create(subject=form.cleaned_data['message_subject'], defaults={
                     'creator': request.user.groups.exclude(name='administracja')[0],
@@ -398,7 +395,7 @@ def add_new_message(request):
             messages.info(request, 'Wysłano nową wiadomość')
             users = get_user_model()
             users = users.objects.filter(
-                groups__name=AddMessageExtForm.choices[int(form.cleaned_data['reciever'])-1][1])
+                groups__name=group_name)
             for user in users:
                 if request.user != user:
                     notification = Notification.objects.get_or_create(user=user, thread=thread[0])
