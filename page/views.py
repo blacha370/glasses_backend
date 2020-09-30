@@ -245,7 +245,8 @@ def inbox(request):
         for group in request.user.groups.all():
             for thread in MessagesThread.objects.filter(reciever=group).order_by('subject'):
                 message_threads.add(thread)
-        print(message_threads)
+            for thread in MessagesThread.objects.filter(creator=group).order_by('subject'):
+                message_threads.add(thread)
     else:
         message_threads = MessagesThread.objects.filter(creator=request.user.groups.exclude(
             name='administracja')[0]).order_by('subject')

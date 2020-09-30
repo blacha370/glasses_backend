@@ -43,13 +43,17 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1601371995441">
+    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1601467034578">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1601371995441" />
-    <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1601374784077">
+    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1601467034578" />
+    <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1601467054129">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1601374784077" />
+    <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1601467054129" />
+    <state x="1978" y="136" width="1421" height="830" key="dock-window-1" timestamp="1601466563534">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="1978" y="136" width="1421" height="830" key="dock-window-1/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1601466563534" />
   </component>
 </project>
