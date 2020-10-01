@@ -240,16 +240,12 @@ def inbox(request):
     notifications = list()
     for thread in Notification.objects.filter(user=request.user).values_list('thread'):
         notifications.append(thread[0])
-    if request.user.groups.filter(name='administracja'):
-        message_threads = set()
-        for group in request.user.groups.all():
-            for thread in MessagesThread.objects.filter(reciever=group).order_by('subject'):
-                message_threads.add(thread)
-            for thread in MessagesThread.objects.filter(creator=group).order_by('subject'):
-                message_threads.add(thread)
-    else:
-        message_threads = MessagesThread.objects.filter(creator=request.user.groups.exclude(
-            name='administracja')[0]).order_by('subject')
+    message_threads = set()
+    for group in request.user.groups.all():
+        for thread in MessagesThread.objects.filter(reciever=group).order_by('subject'):
+            message_threads.add(thread)
+        for thread in MessagesThread.objects.filter(creator=group).order_by('subject'):
+            message_threads.add(thread)
     if request.user.groups.filter(name='administracja'):
         return render(request, 'page/admin_inbox.html', {'message_threads': message_threads,
                                                          'notifications': notifications})
