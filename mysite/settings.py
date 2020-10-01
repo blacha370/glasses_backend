@@ -15,7 +15,7 @@ SECRET_KEY = 'vnh3h8nq*)-tp+bbl+u@)(ou=%9e(xike0g$mrlbt_@f00x5x='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['https://connection-system>.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['https://connection-system.herokuapp.com', '127.0.0.1']
 
 ADMINS = [('Lukasz', 'lukasz.blacha370@gmail.com')]
 
