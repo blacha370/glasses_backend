@@ -384,19 +384,31 @@ def add_new_message(request):
                 thread = MessagesThread.objects.get_or_create(subject=form.cleaned_data['message_subject'], defaults={
                     'creator': request.user.groups.get(name='administracja'),
                     'reciever': Group.objects.get(name=group_name)})
-            thread[0].save()
-            message = Message(thread=thread[0], message_text=form.cleaned_data['message_text'],
-                              message_op=request.user.username,
-                              message_date=dateformat.format(timezone.now(), 'H:i d.m.y'))
-            message.save()
-            messages.info(request, 'Wysłano nową wiadomość')
-            users = get_user_model()
-            users = users.objects.filter(
-                groups__name=group_name)
-            for user in users:
-                if request.user != user:
-                    notification = Notification.objects.get_or_create(user=user, thread=thread[0])
-                    notification[0].save()
+            finally:
+                thread = thread[0]
+                if not request.user.groups.filter(name=thread.creator) and \
+                        not request.user.groups.filter(name=thread.reciever):
+                    try:
+                        thread = MessagesThread(subject=form.cleaned_data['message_subject'] + '.1',
+                                                creator=request.user.groups.exclude(name='administracja')[0],
+                                                reciever=Group.objects.get(name=group_name))
+                    except IndexError:
+                        thread = MessagesThread(subject=form.cleaned_data + '.1',
+                                                creator=request.user.groups.get(name='administracja'),
+                                                reciever=Group.objects.get(name=group_name))
+                thread.save()
+                message = Message(thread=thread, message_text=form.cleaned_data['message_text'],
+                                  message_op=request.user.username,
+                                  message_date=dateformat.format(timezone.now(), 'H:i d.m.y'))
+                message.save()
+                messages.info(request, 'Wysłano nową wiadomość')
+                users = get_user_model()
+                users = users.objects.filter(
+                    groups__name=group_name)
+                for user in users:
+                    if request.user != user:
+                        notification = Notification.objects.get_or_create(user=user, thread=thread)
+                        notification[0].save()
             return redirect(inbox)
 
 
@@ -405,12 +417,11 @@ def delete_message_thread(request, thread_id):
     if request.user.groups.filter(name='administracja'):
         try:
             thread = MessagesThread.objects.get(pk=thread_id)
+            thread.delete_thread()
+            messages.info(request, 'Usunięto wiadomość')
         except MessagesThread.DoesNotExist:
             messages.info(request, 'Błąd usuwania wiadomości')
             return redirect(inbox)
-        finally:
-            thread.delete_thread()
-            messages.info(request, 'Usunięto wiadomość')
     elif request.user.groups.filter(name="prod_admin"):
         messages.info(request, 'Nie masz dostępu do tej strony')
         return redirect(add_user)
