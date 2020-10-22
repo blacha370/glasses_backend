@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zamówienia</title>
+        {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'page/orders.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar__list">
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'logout_user' %}">Logout</a>
+            </li>
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'archive' 1 %}">Zrealizowane zamówienia</a>
+            </li>
+            {% if notification > 0 %}
+            <li class="navbar__item">
+                <a class="navbar__link navbar__link--new" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% else %}
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'inbox' %}">Wiadomości</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% if active_order_list %}
+    {% if prev_page >= 1 or next_page  > 1%}
+        <aside class="pagination">
+            {% if prev_page >= 1%}
+                <a class="pagination__link pagination__link--active" href="{% url 'orders' prev_page %}">Poprzednia strona</a>
+            {% else %}
+                <div class="pagination__link"></div>
+            {% endif %}
+            {% if next_page > 1 %}
+                <a class="pagination__link pagination__link--active" href="{% url 'orders' next_page %}">Następna strona</a>
+            {% else %}
+                <div class="pagination__link"></div>
+            {% endif %}
+        </aside>
+    {% endif %}
+        <section class="order_table order_table__row--head">
+            <ul class="order_table__row">
+                <li class="order_table__element">Data</li>
+                <li class="order_table__element">Numer</li>
+                <li class="order_table__element">Auftrag</li>
+                <li class="order_table__element">Etykieta</li>
+                <li class="order_table__element">Zdjęcie</li>
+                <li class="order_table__element">Status</li>
+                <li class="order_table__element">Zmiana statusu</li>
+            </ul>
+            {% for order in active_order_list %}
+                <ul class="order_table__row order_table__row--{{order.order_status}}">
+                    <li class="order_table__element">{{order.pub_date}}</li>
+                    <li class="order_table__element">
+                        <a class="order_table__link" href="{% url 'details' order.id %}">{{order.order_number}}</a>
+                    </li>
+                    <li class="order_table__element">
+                        <a class="order_table__link" target="_blank" href="https://z4l.pl/Auftrag_szkielka/Auftrag%20{{order.order_number}}.pdf">Auftrag {{order.order_number}}.pdf</a>
+                    </li>
+                    <li class="order_table__element">
+                        <a class="order_table__link" target="_blank" href="https://z4l.pl/Auftrag_szkielka/{{order.order_number}}.pdf">{{order.order_number}}.pdf</a>
+                    </li>
+                    <li class="order_table__element">
+                            <p class="order_table__divide">{{order.divided}}</p>
+                            <a class="order_table__link" target="_blank" href="https://z4l.pl/glass/{{order.image}}-1.jpg">
+                                <img src="https://z4l.pl/glass/{{order.image}}-1.jpg" width="144" height="144">
+                            </a>
+                    </li>
+                    {% for status in order.order_statuses %}
+                        {% if status.0 == order.order_status %}
+                            <li class="order_table__element">{{status.1}}</li>
+                            {% if order.order_status != "3" %}
+                                {% for a_status in availible_statuses %}
+                                    {% if a_status.0 == status.0 %}
+                                        <button class="order_table__element order_table__element--button">
+                                            <a href="{% url 'change' order.id %}" method="post" class="order_table__link">{{a_status.1}}</a>
+                                        </button>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </section>
+    {% else %}
+    <section class="no_orders">
+        <div class="no_orders__div">
+            <h1 class="no_orders__text">Brak zamówień</h1>
+        </div>
+    </section>
+    {% endif %}
+</body>
+</html>

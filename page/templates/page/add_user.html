@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj użytkownika</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'page/add_user.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar__list">
+            <li class="navbar__item">
+                <a href="{% url 'logout_user' %}" class="navbar__link">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    <section class="main">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="msg">
+                <p class="msg__text">{{message}}</p>
+            </div>
+            {% endfor %}
+        {% endif %}
+        <form class="main__form form" action="{% url 'add_user' %}" method="post">
+            {% csrf_token %}
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+            <input class="form__submit" type="submit" value="Dodaj">
+        </form>
+    </section>
+</body>
+</html>
