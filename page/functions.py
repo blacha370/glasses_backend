@@ -21,13 +21,21 @@ def iterate_order_add(f, request):
         if line.replace(';', '') == '' or line.replace(',', '') == '':
             info.append('pusta linia: ' + str(i))
         elif ';' in line:
-            line = line.split(';')
+            line = line.split(',')
             if not line[1] in all_orders:
-                create_order(line, request)
+                owner = get_order_owner(line[1])
+                if owner:
+                    create_order(line, request, owner)
+                else:
+                    info.append('nieprawidłowy numer zamówienia: ' + line[1])
         elif ',' in line:
             line = line.split(',')
             if not line[1] in all_orders:
-                create_order(line, request)
+                owner = get_order_owner(line[1])
+                if owner:
+                    create_order(line, request, owner)
+                else:
+                    info.append('nieprawidłowy numer zamówienia: ' + line[1])
         else:
             info.append('błąd z linią: ' + str(i))
         i += 1
@@ -86,8 +94,7 @@ def get_order_owner(order_number):
         return None
 
 
-def create_order(line, request):
-    owner = get_order_owner(line[1])
+def create_order(line, request, owner):
     if len(line) == 5:
         if line[3].startswith('1'):
             order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
