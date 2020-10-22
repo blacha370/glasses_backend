@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wiadomości</title>
+        {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'page/inbox.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar__list">
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'logout_user' %}">Logout</a>
+            </li>
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'orders' 1 %}">Zamówienia</a>
+            </li>
+            <li class="navbar__item">
+                <a class="navbar__link" href="{% url 'archive_admin' 1 %}">Zrealizowane zamówienia</a>
+            </li>
+        </ul>
+    </nav>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="msg">
+        <p class="msg__text">{{message}}</p>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <section class="inbox">
+    <div class="inbox__element">
+        <a class="inbox__link" href="{% url 'new_message' %}">Utwórz wiadomość</a>
+    </div>
+    {% if message_threads %}
+        {% for thread in message_threads %}
+        <ul class="inbox__thread">
+            <li class="inbox__item">
+                {% if thread.id in notifications %}
+                    <a class="inbox__link inbox__link--thread inbox__link--new" href="{% url 'message' thread.id 1 %}">{{thread.subject}}</a>
+                {% else %}
+                    <a class="inbox__link inbox__link--thread" href="{% url 'message' thread.id 1 %}">{{thread.subject}}</a>
+                {% endif %}
+            </li>
+        </ul>
+        {% endfor %}
+    </section>
+    {% else %}
+    <section class="no_orders">
+        <div class="no_orders__div">
+            <h1 class="no_orders__text">Brak wiadomości</h1>
+        </div>
+    </section>
+    {% endif %}
+        <ul class="inbox__thread">
+            <li class="inbox__item">
+                <a class="inbox__link inbox__link--thread" href="{% url 'archive_inbox' %}">Archiwum</a>
+            </li>
+        </ul>
+    </section>
+</body>
+</html>
