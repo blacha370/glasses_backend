@@ -28,7 +28,7 @@
 {% endblock %}
 {% block content %}
     {% if active_order_list %}
-    {% if prev_page >= 1 or next_page  > 1%}
+    {% if prev_page >= 1 or next_page  > 1 %}
         <aside class="pagination">
             {% if prev_page >= 1%}
                 <a class="pagination__link pagination__link--active" href="{% url 'orders' prev_page %}">Poprzednia strona</a>
