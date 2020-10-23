@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Zamówienia {{user.get_username}}</title>
-        {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+{% extends "page/base.html" %}
+
+{% block static %}
     <link rel="stylesheet" type="text/css" href="{% static 'page/orders.css' %}">
-</head>
-<body>
+{% endblock %}
+{% block nav %}
     <nav class="navbar">
         <ul class="navbar__list">
             <li class="navbar__item">
@@ -27,6 +23,8 @@
             {% endif %}
         </ul>
     </nav>
+{% endblock %}
+{% block content %}
     {% if active_order_list %}
     {% if prev_page >= 1 or next_page  > 1%}
         <aside class="pagination">
@@ -95,5 +93,6 @@
         {{ add_order_form }}
         <input type="submit" class="add_order_form__button" value="Dodaj Zamówienie">
     </form>
-</body>
-</html>
+{% endblock %}
+{% block user %}
+{% endblock %}

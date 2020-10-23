@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Wiadomości</title>
-        {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+{% extends "page/base.html" %}
+
+{% block static %}
     <link rel="stylesheet" type="text/css" href="{% static 'page/inbox.css' %}">
-</head>
-<body>
+{% endblock %}
+{% block nav %}
     <nav class="navbar">
         <ul class="navbar__list">
             <li class="navbar__item">
@@ -21,6 +17,8 @@
             </li>
         </ul>
     </nav>
+{% endblock %}
+{% block content %}
     {% if messages %}
     {% for message in messages %}
     <div class="msg">
@@ -58,5 +56,6 @@
             </li>
         </ul>
     </section>
-</body>
-</html>
+{% endblock %}
+{% block user %}
+{% endblock %}

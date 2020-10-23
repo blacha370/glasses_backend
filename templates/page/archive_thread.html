@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{messages_thread.0.thread.subject}}</title>
-        {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+{% extends "page/base.html" %}
+
+{% block static %}
     <link rel="stylesheet" type="text/css" href="{% static 'page/thread.css' %}">
-</head>
-<body>
+{% endblock %}
+{% block nav %}
     <nav class="navbar">
         <ul class="navbar__list">
             <li class="navbar__item">
@@ -27,6 +23,8 @@
             {% endif %}
         </ul>
     </nav>
+{% endblock %}
+{% block content %}
     {% if prev_page >= 1 or next_page  > 1%}
         <aside class="pagination">
             {% if prev_page >= 1%}
@@ -53,5 +51,6 @@
         </div>
         {% endfor %}
     </section>
-</body>
-</html>
+{% endblock %}
+{% block user %}
+{% endblock %}
