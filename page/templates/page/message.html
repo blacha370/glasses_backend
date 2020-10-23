@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{messages_thread.0.thread.subject}}</title>
-        {% load static %}
+{% extends "page/base.html" %}
+
+{% block static %}
+    {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'page/thread.css' %}">
-</head>
-<body>
+{% endblock %}
+{% block nav %}
     <nav class="navbar">
         <ul class="navbar__list">
             <li class="navbar__item">
@@ -27,6 +25,8 @@
             {% endif %}
         </ul>
     </nav>
+{% endblock %}
+{% block content %}
     {% if messages %}
     {% for message in messages %}
     <div class="msg">
@@ -65,5 +65,14 @@
             <input class="form__submit" type="submit" value="Wyślij">
         </form>
     </section>
-</body>
-</html>
+{% endblock %}
+{% block user %}
+    <div class="user">
+        <p class="user__name">{{ request.user.username }}</p>
+        <div class="user__groups">
+        {% for group in request.user.groups.all %}
+            <p class="user__group">{{ group }}</p>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}
