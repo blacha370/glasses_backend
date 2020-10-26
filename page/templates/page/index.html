@@ -1,14 +1,11 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Zaloguj</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "page/base.html" %}
+
+{% block static %}
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'page/index.css' %}">
-</head>
-<body>
+{% endblock %}
+{% block content %}
     {% if messages %}
     {% for message in messages %}
     <div class="msg">
@@ -23,5 +20,4 @@
             <input class='login__submit' type="submit" value="Zaloguj">
         </form>
     </div>
-</body>
-</html>
+{% endblock %}

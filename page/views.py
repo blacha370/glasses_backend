@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .models import *
 from .forms import StatusForm, LoginForm, AddOrderForm, AddMessageForm, AddMessageExtForm
@@ -27,8 +26,6 @@ def login_user(request):
                     return redirect(admin_orders, current_page=1)
                 elif user.groups.filter(name='druk').exists():
                     return redirect(user_orders, current_page=1)
-                elif user.groups.filter(name='prod_admin'):
-                    return redirect(add_user)
     messages.error(request, 'Nieprawidłowy login lub hasło')
     return redirect(index)
 
@@ -62,9 +59,6 @@ def admin_orders(request, current_page):
                                                           'prev_page': prev_page, 'notification': notification})
     elif request.user.groups.filter(name='druk'):
         return redirect(user_orders, current_page=1)
-    elif request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     else:
         return redirect(logout_user)
 
@@ -86,9 +80,6 @@ def admin_archive(request, current_page):
                                                            'notification': notification})
     elif request.user.groups.filter(name='druk'):
         return redirect(user_archive, current_page=1)
-    elif request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
 
 
 @login_required(login_url='')
@@ -107,16 +98,10 @@ def add_order(request):
         return render(request, 'page/add_order.html', {'form': form})
     elif request.user.groups.filter(name='druk').exists():
         return redirect(user_orders, current_page=1)
-    elif request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
 
 
 @login_required(login_url='')
 def user_orders(request, current_page):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     page_len = 15
     orders_amount = ActiveOrder.objects.count()
     prev_page = current_page - 1
@@ -142,9 +127,6 @@ def user_orders(request, current_page):
 
 @login_required(login_url='')
 def user_archive(request, current_page):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     page_len = 15
     archive_order_list = get_orders_page(request.user, UnactiveOrder, page_len, current_page)
     orders_amount = UnactiveOrder.objects.count()
@@ -161,9 +143,6 @@ def user_archive(request, current_page):
 
 @login_required(login_url='')
 def change(request, order_id):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     order = get_object_or_404(ActiveOrder, pk=order_id)
     if request.method == 'POST':
         form = StatusForm(request.POST)
@@ -195,9 +174,6 @@ def change(request, order_id):
 
 @login_required(login_url='')
 def change_confirmation(request, order_id, order_status):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     order = get_object_or_404(ActiveOrder, pk=order_id)
     if order.order_status == order_status:
         status = OrderStatusChange(order=order, change_owner=request.user.username,
@@ -212,9 +188,6 @@ def change_confirmation(request, order_id, order_status):
 
 @login_required(login_url='')
 def details(request, order_id):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     try:
         order = ActiveOrder.objects.get(pk=order_id)
         status_changes = OrderStatusChange.objects.filter(order=order)
@@ -252,25 +225,16 @@ def inbox(request):
     elif request.user.groups.filter(name='druk'):
         return render(request, 'page/user_inbox.html', {'message_threads': message_threads,
                                                         'notifications': notifications})
-    elif request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
 
 
 @login_required(login_url='')
 def archive_inbox(request):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     message_threads = ArchiveThread.objects.order_by('subject')
     return render(request, 'page/archive_inbox.html', {'message_threads': message_threads})
 
 
 @login_required(login_url='')
 def archive_thread(request, message_topic, current_page):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     page_len = 10
     current_notification = Notification.objects.filter(user=request.user,
                                                        thread=message_topic)
@@ -294,9 +258,6 @@ def archive_thread(request, message_topic, current_page):
 
 @login_required(login_url='')
 def message_thread(request, message_topic, current_page):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     page_len = 10
     current_notification = Notification.objects.filter(user=request.user,
                                                        thread=message_topic)
@@ -322,10 +283,7 @@ def message_thread(request, message_topic, current_page):
 
 @login_required(login_url='')
 def add_message(request, thread_subject):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
-    elif request.method == 'POST':
+    if request.method == 'POST':
         form = AddMessageForm(request.POST)
         if form.is_valid():
             try:
@@ -359,9 +317,6 @@ def add_message(request, thread_subject):
 
 @login_required(login_url='')
 def new_message(request):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     form = AddMessageExtForm(request.POST)
     notification = len(Notification.objects.filter(user=request.user))
     return render(request, 'page/new_message.html', {'form': form, 'notification': notification})
@@ -369,10 +324,7 @@ def new_message(request):
 
 @login_required(login_url='')
 def add_new_message(request):
-    if request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
-    elif request.method == 'POST':
+    if request.method == 'POST':
         form = AddMessageExtForm(request.POST)
         if form.is_valid():
             group_name = AddMessageExtForm.choices[int(form.cleaned_data['reciever'])-1][1]
@@ -422,24 +374,4 @@ def delete_message_thread(request, thread_id):
         except MessagesThread.DoesNotExist:
             messages.info(request, 'Błąd usuwania wiadomości')
             return redirect(inbox)
-    elif request.user.groups.filter(name="prod_admin"):
-        messages.info(request, 'Nie masz dostępu do tej strony')
-        return redirect(add_user)
     return redirect(inbox)
-
-
-@login_required(login_url='')
-def add_user(request):
-    if request.user.groups.filter(name='administracja') or request.user.groups.filter(name="prod_admin"):
-        if request.method == 'POST':
-            form = UserCreationForm(request.POST)
-            if form.is_valid():
-                group = Group.objects.get(name='druk')
-                form.save()
-                user = User.objects.get(username=request.POST.get('username'))
-                group.user_set.add(user)
-                messages.info(request, 'Dodano nowego użytkownika')
-                return redirect('add_user')
-        else:
-            form = UserCreationForm()
-        return render(request, 'page/add_user.html', {'form': form})

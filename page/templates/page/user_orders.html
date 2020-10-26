@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Zamówienia</title>
-        {% load static %}
+{% extends "page/base.html" %}
+
+{% block static %}
+    {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'page/orders.css' %}">
-</head>
-<body>
+{% endblock %}
+{% block nav %}
     <nav class="navbar">
         <ul class="navbar__list">
             <li class="navbar__item">
@@ -27,8 +25,10 @@
             {% endif %}
         </ul>
     </nav>
+{% endblock %}
+{% block content %}
     {% if active_order_list %}
-    {% if prev_page >= 1 or next_page  > 1%}
+    {% if prev_page >= 1 or next_page  > 1 %}
         <aside class="pagination">
             {% if prev_page >= 1%}
                 <a class="pagination__link pagination__link--active" href="{% url 'orders' prev_page %}">Poprzednia strona</a>
@@ -94,5 +94,14 @@
         </div>
     </section>
     {% endif %}
-</body>
-</html>
+{% endblock %}
+{% block user %}
+    <div class="user">
+        <p class="user__name">{{ request.user.username }}</p>
+        <div class="user__groups">
+        {% for group in request.user.groups.all %}
+            <p class="user__group">{{ group }}</p>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

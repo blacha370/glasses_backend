@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Nowa wiadomość</title>
-            {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'page/style.css' %}">
+{% extends "page/base.html" %}
+
+{% block static %}
     <link rel="stylesheet" type="text/css" href="{% static 'page/new_message.css' %}">
-</head>
-<body>
+{% endblock %}
+{% block nav %}
     <nav class="navbar">
         <ul class="navbar__list">
             <li class="navbar__item">
@@ -30,6 +26,8 @@
             {% endif %}
         </ul>
     </nav>
+{% endblock %}
+{% block content %}
     <section class="section">
         <form class="form" action="{% url 'add_new_message' %}" method="post">
             {% csrf_token %}
@@ -37,5 +35,6 @@
             <input clas="form__submit" type="submit" value="Wyślij">
         </form>
     </section>
-</body>
-</html>
+{% endblock %}
+{% block user %}
+{% endblock %}
