@@ -22,8 +22,8 @@ class AddMessageForm(forms.Form):
 
 
 class AddMessageExtForm(forms.Form):
-    choices = [(1, 'Pomoc techniczna'), (2, 'administracja'), (3, '4dich'), (4, 'szymon'), (5, 'besart'),
-               (6, 'kasia'), (7, 'druk')]
+    choices = [(1, 'pomoc techniczna'), (2, 'administracja'), (3, '4dich'), (4, 'besart'),
+               (5, 'kasia'), (6, 'druk')]
     reciever = forms.ChoiceField(label='', widget=forms.Select, choices=choices)
     message_subject = forms.CharField(max_length=20, label='Temat')
     message_text = forms.CharField(max_length=200, widget=forms.Textarea, label="Wiadomość")

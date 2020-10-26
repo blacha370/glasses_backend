@@ -88,8 +88,6 @@ def get_order_owner(order_number):
         return Group.objects.get(name='kasia')
     elif order_number.startswith('4DICH'):
         return Group.objects.get(name='4dich')
-    elif order_number.startswith('Coś'):
-        return Group.objects.get(name='szymon')
     else:
         return None
 
