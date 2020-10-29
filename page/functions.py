@@ -82,7 +82,7 @@ def get_orders_page(user, orders_type: object, page_len: int, current_page: int)
 
 
 def get_order_owner(order_number):
-    if order_number.startswith('A20'):
+    if order_number.startswith('A20') or order_number.startswith('E20'):
         return Group.objects.get(name='besart')
     elif order_number.startswith('AU'):
         return Group.objects.get(name='kasia')
