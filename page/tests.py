@@ -631,3 +631,46 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(active_order.divided, 'całe')
         self.assertEqual(active_order.tracking_number, '0123456789012345678901')
         self.assertEqual(ActiveOrder.objects.count(), 5)
+
+    def test_create_order_with_int_as_image(self):
+        active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                                   order_status='1', image=1, divided='całe',
+                                   tracking_number='0123456789012345678901')
+        active_order.save()
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
+        self.assertEqual(active_order.owner.name, 'z4l')
+        self.assertEqual(active_order.order_number, 'QWERTYUIOP1234')
+        self.assertEqual(active_order.pub_date, '01.01.2020')
+        self.assertEqual(active_order.order_status, '1')
+        self.assertEqual(active_order.image, '1')
+        self.assertEqual(active_order.divided, 'całe')
+        self.assertEqual(active_order.tracking_number, '0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 1)
+
+        active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1235', pub_date='01.01.2020',
+                                   order_status='1', image=0, divided='całe',
+                                   tracking_number='0123456789012345678901')
+        active_order.save()
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
+        self.assertEqual(active_order.owner.name, 'z4l')
+        self.assertEqual(active_order.order_number, 'QWERTYUIOP1235')
+        self.assertEqual(active_order.pub_date, '01.01.2020')
+        self.assertEqual(active_order.order_status, '1')
+        self.assertEqual(active_order.image, '0')
+        self.assertEqual(active_order.divided, 'całe')
+        self.assertEqual(active_order.tracking_number, '0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 2)
+
+        active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1236', pub_date='01.01.2020',
+                                   order_status='1', image=-1, divided='całe',
+                                   tracking_number='0123456789012345678901')
+        active_order.save()
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1236')
+        self.assertEqual(active_order.owner.name, 'z4l')
+        self.assertEqual(active_order.order_number, 'QWERTYUIOP1236')
+        self.assertEqual(active_order.pub_date, '01.01.2020')
+        self.assertEqual(active_order.order_status, '1')
+        self.assertEqual(active_order.image, '-1')
+        self.assertEqual(active_order.divided, 'całe')
+        self.assertEqual(active_order.tracking_number, '0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 3)
