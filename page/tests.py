@@ -84,3 +84,20 @@ class ActiveOrderTestCase(TestCase):
                                 image='000', divided='całe', tracking_number='0123456789012345678901')
             self.assertRaises(IntegrityError, order.save)
         self.assertEqual(ActiveOrder.objects.count(), 0)
+
+    def test_create_order_with_structure_as_owner(self):
+        self.assertRaises(ValueError, ActiveOrder, owner=list(), order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+        self.assertRaises(ValueError, ActiveOrder, owner=dict(), order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+        self.assertRaises(ValueError, ActiveOrder, owner=tuple(), order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+        self.assertRaises(ValueError, ActiveOrder, owner=set(), order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
