@@ -23,3 +23,24 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(active_order.divided, 'całe')
         self.assertEqual(active_order.tracking_number, '0123456789012345678901')
         self.assertEqual(ActiveOrder.objects.count(), 1)
+
+    def test_create_order_with_string_as_owner(self):
+        self.assertRaises(ValueError, ActiveOrder, owner='', order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+        self.assertRaises(ValueError, ActiveOrder, owner=' ', order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+        self.assertRaises(ValueError, ActiveOrder, owner='\n ', order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+        self.assertRaises(ValueError, ActiveOrder, owner='z4l', order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+        self.assertRaises(ValueError, ActiveOrder, owner='1', order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
