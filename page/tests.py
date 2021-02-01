@@ -1,4 +1,6 @@
 from django.test import TestCase
+from django.db.utils import IntegrityError
+from django.db.transaction import atomic
 from .models import *
 
 
@@ -74,4 +76,11 @@ class ActiveOrderTestCase(TestCase):
 
         self.assertRaises(ValueError, ActiveOrder, owner=False, order_number='QWERTYUIOP1234', pub_date='01.01.2020',
                           order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+    def test_create_order_with_none_as_owner(self):
+        with atomic():
+            order = ActiveOrder(owner=None, order_number='QWERTYUIOP1234', pub_date='01.01.2020', order_status='1',
+                                image='000', divided='całe', tracking_number='0123456789012345678901')
+            self.assertRaises(IntegrityError, order.save)
         self.assertEqual(ActiveOrder.objects.count(), 0)
