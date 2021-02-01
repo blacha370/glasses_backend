@@ -488,3 +488,11 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(active_order.divided, 'całe')
         self.assertEqual(active_order.tracking_number, '0123456789012345678901')
         self.assertEqual(ActiveOrder.objects.count(), 2)
+
+    def test_create_order_with_none_as_pub_date_number(self):
+        with atomic():
+            active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date=None,
+                                       order_status='1', image='000', divided='całe',
+                                       tracking_number='0123456789012345678901')
+            self.assertRaises(IntegrityError, active_order.save)
+        self.assertEqual(ActiveOrder.objects.count(), 0)
