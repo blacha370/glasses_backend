@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -151,9 +150,8 @@ def change(request, order_id):
                 status = OrderStatusChange(order=order, change_owner=request.user.username,
                                            previous_state=order.order_status, new_state=form.cleaned_data['value'],
                                            date=dateformat.format(timezone.now(), 'H:i d.m.y'))
-                order.order_status = form.cleaned_data['value']
+                order.update_status(form.cleaned_data['value'])
                 status.save()
-                order.save()
         return redirect(request.META.get('HTTP_REFERER'))
     elif request.user.groups.filter(name='druk') or request.user.groups.filter(name='administracja'):
         if order.order_status == '1':

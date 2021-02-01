@@ -20,12 +20,17 @@ class ActiveOrder(models.Model):
     def __str__(self):
         return self.order_number
 
-    def __del__(self):
+    def update_status(self, new_status):
+        self.order_status = new_status
+        self.save()
         if self.order_status == '4':
-            unactive = UnactiveOrder(order_number=self.order_number, pub_date=self.pub_date, image=self.image,
-                                     owner=self.owner, unactivation_date=dateformat.format(timezone.now(), 'd.m.y'))
-            unactive.save()
-            self.delete()
+            self.complete_order()
+
+    def complete_order(self):
+        unactive = UnactiveOrder(order_number=self.order_number, pub_date=self.pub_date, image=self.image,
+                                 owner=self.owner, unactivation_date=dateformat.format(timezone.now(), 'd.m.y'))
+        unactive.save()
+        self.delete()
 
 
 class OrderStatusChange(models.Model):
