@@ -322,7 +322,7 @@ class ActiveOrderTestCase(TestCase):
             self.assertRaises(IntegrityError, active_order.save)
         self.assertEqual(ActiveOrder.objects.count(), 0)
 
-    def test_create_order_with_string_as_pub_date_number(self):
+    def test_create_order_with_string_as_pub_date(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date='',
                                    order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
@@ -388,7 +388,7 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(active_order.tracking_number, '0123456789012345678901')
         self.assertEqual(ActiveOrder.objects.count(), 5)
 
-    def test_create_order_with_int_as_pub_date_number(self):
+    def test_create_order_with_int_as_pub_date(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date=1,
                                    order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
@@ -431,7 +431,7 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(active_order.tracking_number, '0123456789012345678901')
         self.assertEqual(ActiveOrder.objects.count(), 3)
 
-    def test_create_order_with_float_as_pub_date_number(self):
+    def test_create_order_with_float_as_pub_date(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date=1.1,
                                    order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
@@ -460,7 +460,7 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(active_order.tracking_number, '0123456789012345678901')
         self.assertEqual(ActiveOrder.objects.count(), 2)
 
-    def test_create_order_with_bool_as_pub_date_number(self):
+    def test_create_order_with_bool_as_pub_date(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date=True,
                                    order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
@@ -489,7 +489,7 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(active_order.tracking_number, '0123456789012345678901')
         self.assertEqual(ActiveOrder.objects.count(), 2)
 
-    def test_create_order_with_none_as_pub_date_number(self):
+    def test_create_order_with_none_as_pub_date(self):
         with atomic():
             active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date=None,
                                        order_status='1', image='000', divided='całe',
@@ -497,7 +497,7 @@ class ActiveOrderTestCase(TestCase):
             self.assertRaises(IntegrityError, active_order.save)
         self.assertEqual(ActiveOrder.objects.count(), 0)
 
-    def test_create_order_with_structure_as_pub_date_number(self):
+    def test_create_order_with_structure_as_pub_date(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date=list(),
                                    order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
@@ -557,6 +557,6 @@ class ActiveOrderTestCase(TestCase):
     def test_create_order_without_pub_date(self):
         with atomic():
             active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', order_status='1',
-                                       image='000', divided='całe',tracking_number='0123456789012345678901')
+                                       image='000', divided='całe', tracking_number='0123456789012345678901')
             self.assertRaises(IntegrityError, active_order.save)
         self.assertEqual(ActiveOrder.objects.count(), 0)
