@@ -114,6 +114,7 @@ class ActiveOrderTestCase(TestCase):
                                    order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
         active_order.save()
+        active_order = ActiveOrder.objects.get(order_number='')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, '')
         self.assertEqual(active_order.pub_date, '01.01.2020')
@@ -127,6 +128,7 @@ class ActiveOrderTestCase(TestCase):
                                    order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
         active_order.save()
+        active_order = ActiveOrder.objects.get(order_number=' ')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, ' ')
         self.assertEqual(active_order.pub_date, '01.01.2020')
@@ -140,6 +142,7 @@ class ActiveOrderTestCase(TestCase):
                                    order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
         active_order.save()
+        active_order = ActiveOrder.objects.get(order_number='\n ')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, '\n ')
         self.assertEqual(active_order.pub_date, '01.01.2020')
@@ -153,6 +156,7 @@ class ActiveOrderTestCase(TestCase):
                                    order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
         active_order.save()
+        active_order = ActiveOrder.objects.get(order_number='Order number')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'Order number')
         self.assertEqual(active_order.pub_date, '01.01.2020')
@@ -166,6 +170,7 @@ class ActiveOrderTestCase(TestCase):
                                    pub_date='01.01.2020', order_status='1', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
         active_order.save()
+        active_order = ActiveOrder.objects.get(order_number='Definitely too long order number')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'Definitely too long order number')
         self.assertEqual(active_order.pub_date, '01.01.2020')
