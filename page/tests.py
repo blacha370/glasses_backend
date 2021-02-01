@@ -44,3 +44,16 @@ class ActiveOrderTestCase(TestCase):
         self.assertRaises(ValueError, ActiveOrder, owner='1', order_number='QWERTYUIOP1234', pub_date='01.01.2020',
                           order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
         self.assertEqual(ActiveOrder.objects.count(), 0)
+
+    def test_create_order_with_int_as_owner(self):
+        self.assertRaises(ValueError, ActiveOrder, owner=1, order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+        self.assertRaises(ValueError, ActiveOrder, owner=0, order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+
+        self.assertRaises(ValueError, ActiveOrder, owner=-1, order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                          order_status='1', image='000', divided='całe', tracking_number='0123456789012345678901')
+        self.assertEqual(ActiveOrder.objects.count(), 0)
