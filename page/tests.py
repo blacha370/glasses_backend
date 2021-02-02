@@ -1776,3 +1776,22 @@ class UnactiveOrderTestCase(TestCase):
         unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
         self.assertEqual(UnactiveOrder.objects.count(), 1)
         self.assertEqual(unactive_order.pub_date, datetime.date(year=2020, month=1, day=1))
+
+    def test_create_with_int_as_pub_date_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=1, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=0, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=-1, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
