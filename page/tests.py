@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.db.utils import IntegrityError
+from django.core.exceptions import ValidationError
 from django.db.transaction import atomic
+import datetime
 from .models import *
 
 
@@ -1502,6 +1504,18 @@ class UnactiveOrderTestCase(TestCase):
         unactive_order.save()
         self.assertEqual(UnactiveOrder.objects.count(), 1)
 
+    def test_create_with_same_order_number(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=self.active_order.pub_date, image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+
     def test_create_with_string_as_owner(self):
         with atomic():
             self.assertRaises(ValueError, UnactiveOrder, owner='', order_number=self.active_order.order_number,
@@ -1600,3 +1614,394 @@ class UnactiveOrderTestCase(TestCase):
                                            pub_date=self.active_order.pub_date, image=self.active_order.image)
             self.assertRaises(IntegrityError, unactive_order.save)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_string_as_order_number(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number='',
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.order_number, '')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=' ',
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.order_number, ' ')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number='\n ',
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 3)
+        self.assertEqual(unactive_order.order_number, '\n ')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number='number',
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 4)
+        self.assertEqual(unactive_order.order_number, 'number')
+
+    def test_create_with_int_as_order_number(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=1,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.order_number, '1')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=0,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.order_number, '0')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=-1,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 3)
+        self.assertEqual(unactive_order.order_number, '-1')
+
+    def test_create_with_float_as_order_number(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=1.1,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.order_number, '1.1')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=-1.1,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.order_number, '-1.1')
+
+    def test_create_with_bool_as_order_number(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=True,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.order_number, 'True')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=False,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.order_number, 'False')
+
+    def test_create_with_none_as_order_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=None,
+                                           pub_date=self.active_order.pub_date, image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_structure_as_order_number(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=list(),
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.order_number, '[]')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=dict(),
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.order_number, '{}')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=tuple(),
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 3)
+        self.assertEqual(unactive_order.order_number, '()')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=set(),
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 4)
+        self.assertEqual(unactive_order.order_number, 'set()')
+
+    def test_create_without_order_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, pub_date=self.active_order.pub_date,
+                                           image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_string_as_pub_date_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=' ', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='\n ', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='date', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='01.01.2020', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='2020.01.01', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='01-01-2020', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date='2020-01-01', image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.pub_date, datetime.date(year=2020, month=1, day=1))
+
+    def test_create_with_int_as_pub_date_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=1, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=0, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=-1, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_float_as_pub_date_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=1.1, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=-1.1, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_bool_as_pub_date_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=True, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=False, image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_none_as_pub_date_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=list(), image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_structure_as_pub_date_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=list(), image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=dict(), image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=tuple(), image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=set(), image=self.active_order.image)
+            self.assertRaises(TypeError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_without_pub_date(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_string_as_image(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image='')
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.image, '')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'a',
+                                       pub_date=self.active_order.pub_date, image=' ')
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.image, ' ')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'b',
+                                       pub_date=self.active_order.pub_date, image='\n ')
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 3)
+        self.assertEqual(unactive_order.image, '\n ')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'c',
+                                       pub_date=self.active_order.pub_date, image='image')
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 4)
+        self.assertEqual(unactive_order.image, 'image')
+
+    def test_create_with_int_as_image(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=1)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.image, '1')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'a',
+                                       pub_date=self.active_order.pub_date, image=0)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.image, '0')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'b',
+                                       pub_date=self.active_order.pub_date, image=-1)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 3)
+        self.assertEqual(unactive_order.image, '-1')
+
+    def test_create_with_float_as_image(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=1.1)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.image, '1.1')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'a',
+                                       pub_date=self.active_order.pub_date, image=-1.1)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.image, '-1.1')
+
+    def test_create_with_bool_as_image(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=True)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.image, 'True')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'a',
+                                       pub_date=self.active_order.pub_date, image=False)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.image, 'False')
+
+    def test_create_with_none_as_image(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=self.active_order.pub_date, image=None)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_structure_as_image(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=list())
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.image, '[]')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'a',
+                                       pub_date=self.active_order.pub_date, image=dict())
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.image, '{}')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'b',
+                                       pub_date=self.active_order.pub_date, image=tuple())
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 3)
+        self.assertEqual(unactive_order.image, '()')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'c',
+                                       pub_date=self.active_order.pub_date, image=set())
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 4)
+        self.assertEqual(unactive_order.image, 'set()')
+
+    def test_create_without_image(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.image, '?')
+
+    def test_str_method(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(str(unactive_order), self.active_order.order_number)

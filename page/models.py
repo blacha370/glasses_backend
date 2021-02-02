@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Group
 
 
 class ActiveOrder(models.Model):
-    owner = models.ForeignKey(Group, on_delete=models.CASCADE, default=None)
+    owner = models.ForeignKey(Group, on_delete=models.CASCADE)
     order_number = models.CharField(max_length=14, unique=True, default=None)
     pub_date = models.DateField(auto_now_add=True)
     order_statuses = [('1', 'Nowe'),
@@ -53,7 +53,7 @@ class OrderStatusChange(models.Model):
 
 class UnactiveOrder(models.Model):
     owner = models.ForeignKey(Group, on_delete=models.CASCADE)
-    order_number = models.CharField(max_length=14, unique=True)
+    order_number = models.CharField(max_length=14, unique=True, default=None)
     pub_date = models.DateField()
     unactivation_date = models.DateField(auto_now_add=True)
     image = models.CharField(max_length=20, default='?')
