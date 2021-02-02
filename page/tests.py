@@ -1504,6 +1504,18 @@ class UnactiveOrderTestCase(TestCase):
         unactive_order.save()
         self.assertEqual(UnactiveOrder.objects.count(), 1)
 
+    def test_create_with_same_order_number(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=self.active_order.pub_date, image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+
     def test_create_with_string_as_owner(self):
         with atomic():
             self.assertRaises(ValueError, UnactiveOrder, owner='', order_number=self.active_order.order_number,
