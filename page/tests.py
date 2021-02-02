@@ -1853,3 +1853,10 @@ class UnactiveOrderTestCase(TestCase):
                                            pub_date=set(), image=self.active_order.image)
             self.assertRaises(TypeError, unactive_order.save)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_without_pub_date(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
