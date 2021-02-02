@@ -1547,21 +1547,28 @@ class UnactiveOrderTestCase(TestCase):
     def test_create_with_float_as_owner(self):
         with atomic():
             self.assertRaises(ValueError, UnactiveOrder, owner=1.1, order_number=self.active_order.order_number,
-                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
 
         with atomic():
             self.assertRaises(ValueError, UnactiveOrder, owner=-1.1, order_number=self.active_order.order_number,
-                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
 
     def test_create_with_bool_as_owner(self):
         with atomic():
             self.assertRaises(ValueError, UnactiveOrder, owner=True, order_number=self.active_order.order_number,
-                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
 
         with atomic():
             self.assertRaises(ValueError, UnactiveOrder, owner=False, order_number=self.active_order.order_number,
-                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_none_as_owner(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=None, order_number=self.active_order.order_number,
+                                           pub_date=self.active_order.pub_date, image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
