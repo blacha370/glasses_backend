@@ -923,7 +923,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', order_status='', image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1234')
         self.assertEqual(active_order.order_status, '')
@@ -935,7 +935,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1235', order_status=' ', image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1235')
         self.assertEqual(active_order.order_status, ' ')
@@ -947,7 +947,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1236', order_status='\n ', image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1236')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1236')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1236')
         self.assertEqual(active_order.order_status, '\n ')
@@ -959,7 +959,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1237', order_status='number',
                                    image='000', divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1237')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1237')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1237')
         self.assertEqual(active_order.order_status, 'number')
@@ -972,7 +972,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', order_status=1, image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1234')
         self.assertEqual(active_order.order_status, '1')
@@ -984,7 +984,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1235', order_status=0, image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1235')
         self.assertEqual(active_order.order_status, '0')
@@ -996,7 +996,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1236', order_status=-1, image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1236')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1236')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1236')
         self.assertEqual(active_order.order_status, '-1')
@@ -1009,7 +1009,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', order_status=1.1, image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1234')
         self.assertEqual(active_order.order_status, '1.1')
@@ -1021,7 +1021,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1235', order_status=-1.1, image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1235')
         self.assertEqual(active_order.order_status, '-1.1')
@@ -1034,7 +1034,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', order_status=True, image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1234')
         self.assertEqual(active_order.order_status, 'True')
@@ -1046,7 +1046,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1235', order_status=False, image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1235')
         self.assertEqual(active_order.order_status, 'False')
@@ -1066,7 +1066,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', order_status=list(),
                                    image='000', divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1234')
         self.assertEqual(active_order.order_status, '[]')
@@ -1078,7 +1078,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1235', order_status=dict(),
                                    image='000', divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1235')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1235')
         self.assertEqual(active_order.order_status, '{}')
@@ -1091,7 +1091,7 @@ class ActiveOrderTestCase(TestCase):
                                    image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1236')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1236')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1236')
         self.assertEqual(active_order.order_status, '()')
@@ -1103,7 +1103,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1237', order_status=set(), image='000',
                                    divided='całe', tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1237')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1237')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1237')
         self.assertEqual(active_order.order_status, 'set()')
@@ -1116,7 +1116,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', image='000', divided='całe',
                                    tracking_number='0123456789012345678901')
         active_order.save()
-        active_order =ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1234')
         self.assertEqual(active_order.order_status, "('1', 'Nowe')")
@@ -1285,3 +1285,318 @@ class OrderStatusChangeTestCase(TestCase):
         self.assertEqual(status_change.previous_state, ActiveOrder.order_statuses[0])
         self.assertEqual(status_change.new_state, ActiveOrder.order_statuses[1])
         self.assertEqual(OrderStatusChange.objects.count(), 1)
+
+    def test_create_order_status_change_with_string_as_order(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order='', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=' ', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order='\n ', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order='order', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order='1', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_order_status_change_with_int_as_order(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=1, change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=0, change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=-1, change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_order_status_change_with_float_as_order(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=1.1, change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=-1.1, change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_order_status_change_with_bool_as_order(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=True, change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=False, change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_order_status_change_with_none_as_order(self):
+        with atomic():
+            status_change = OrderStatusChange(order=None, change_owner=self.user,
+                                              previous_state=self.active_order.order_status,
+                                              new_state=ActiveOrder.order_statuses[1])
+            self.assertRaises(IntegrityError, status_change.save)
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_order_status_change_with_structure_as_order(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=list(), change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=dict(), change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=tuple(), change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=set(), change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_order_status_change_without_order(self):
+        with atomic():
+            status_change = OrderStatusChange(change_owner=self.user, previous_state=self.active_order.order_status,
+                                              new_state=ActiveOrder.order_statuses[1])
+            self.assertRaises(IntegrityError, status_change.save)
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_with_string_as_change_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner='',
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=' ',
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner='\n ',
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner='user',
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_with_int_as_change_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=1,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=0,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=-1,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_with_float_as_change_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=1.1,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=-1.1,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_with_bool_as_change_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=True,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=False,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_with_none_as_change_owner(self):
+        with atomic():
+            status_change = OrderStatusChange(order=self.active_order, change_owner=None,
+                                              previous_state=self.active_order.order_status,
+                                              new_state=ActiveOrder.order_statuses[1])
+            self.assertRaises(IntegrityError, status_change.save)
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_with_structure_as_change_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=list(),
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=dict(),
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=tuple,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=set(),
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_without_change_owner(self):
+        with atomic():
+            status_change = OrderStatusChange(order=self.active_order, previous_state=self.active_order.order_status,
+                                              new_state=ActiveOrder.order_statuses[1])
+            self.assertRaises(IntegrityError, status_change.save)
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+
+class UnactiveOrderTestCase(TestCase):
+    def setUp(self):
+        names = ['z4l', 'besart', 'kasia', 'administracja', 'Pomoc techniczna', 'druk']
+        for name in names:
+            group = Group(name=name)
+            group.save()
+        self.user = User(username='User')
+        self.user.save()
+        self.groups = Group.objects.all()
+        self.active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234',
+                                        order_status=ActiveOrder.order_statuses[0], image='000', divided='całe',
+                                        tracking_number='0123456789012345678901')
+        self.active_order.save()
+
+    def test_create(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+
+    def test_create_with_string_as_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner='', order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=' ', order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner='\n ', order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner='User', order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner='1', order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_int_as_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=1, order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=0, order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=-1, order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_float_as_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=1.1, order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=-1.1, order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_bool_as_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=True, order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=False, order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_none_as_owner(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=None, order_number=self.active_order.order_number,
+                                           pub_date=self.active_order.pub_date, image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_structure_as_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=list(), order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=dict(), order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=tuple(), order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=set(), order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_without_owner(self):
+        with atomic():
+            unactive_order = UnactiveOrder(order_number=self.active_order.order_number,
+                                           pub_date=self.active_order.pub_date, image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
