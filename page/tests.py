@@ -1422,3 +1422,14 @@ class OrderStatusChangeTestCase(TestCase):
             self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=-1,
                               previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
         self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_with_float_as_change_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=1.1,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=-1.1,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
