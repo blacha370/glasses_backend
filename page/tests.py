@@ -2100,3 +2100,28 @@ class MessageThreadTestCase(TestCase):
             thread = MessagesThread(subject=None)
             self.assertRaises(IntegrityError, thread.save)
         self.assertEqual(MessagesThread.objects.count(), 0)
+
+    def test_create_with_structure_as_subject(self):
+        thread = MessagesThread(subject=list())
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 1)
+        self.assertEqual(thread.subject, '[]')
+
+        thread = MessagesThread(subject=dict())
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 2)
+        self.assertEqual(thread.subject, '{}')
+
+        thread = MessagesThread(subject=tuple())
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 3)
+        self.assertEqual(thread.subject, '()')
+
+        thread = MessagesThread(subject=set())
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 4)
+        self.assertEqual(thread.subject, 'set()')
