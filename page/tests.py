@@ -1507,3 +1507,9 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(active_order.divided, 'całe')
         self.assertEqual(active_order.tracking_number, '0123456789012345678901')
         self.assertEqual(ActiveOrder.objects.count(), 1)
+
+    def test_create_without_arguments(self):
+        with atomic():
+            active_order = ActiveOrder()
+            self.assertRaises(IntegrityError, active_order.save)
+        self.assertEqual(ActiveOrder.objects.count(), 0)
