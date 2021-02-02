@@ -1889,3 +1889,25 @@ class UnactiveOrderTestCase(TestCase):
         unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
         self.assertEqual(UnactiveOrder.objects.count(), 4)
         self.assertEqual(unactive_order.image, 'image')
+
+    def test_create_with_int_as_image(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=1)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.image, '1')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'a',
+                                       pub_date=self.active_order.pub_date, image=0)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.image, '0')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'b',
+                                       pub_date=self.active_order.pub_date, image=-1)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 3)
+        self.assertEqual(unactive_order.image, '-1')
