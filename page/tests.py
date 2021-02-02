@@ -2094,3 +2094,9 @@ class MessageThreadTestCase(TestCase):
         thread = MessagesThread.objects.get(pk=thread.pk)
         self.assertEqual(MessagesThread.objects.count(), 2)
         self.assertEqual(thread.subject, 'False')
+
+    def test_create_with_none_as_subject(self):
+        with atomic():
+            thread = MessagesThread(subject=None)
+            self.assertRaises(IntegrityError, thread.save)
+        self.assertEqual(MessagesThread.objects.count(), 0)
