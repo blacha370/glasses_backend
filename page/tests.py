@@ -1616,3 +1616,18 @@ class ActiveOrderTestCase(TestCase):
 
         self.assertFalse(active_order.update_status(set()))
         self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+
+    def test_update_status_without_new_status(self):
+        active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                                   image='000', divided='całe', tracking_number='0123456789012345678901')
+        active_order.save()
+        self.assertTrue(active_order.update_status())
+        self.assertEqual(active_order.order_status, ('2', 'W przygotowaniu'))
+
+        self.assertTrue(active_order.update_status())
+        self.assertEqual(active_order.order_status, ('3', 'Wysłane'))
+
+        self.assertIsNone(active_order.update_status())
+        self.assertEqual(active_order.order_status, ('4', 'Zakończone'))
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
