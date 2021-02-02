@@ -44,20 +44,18 @@ class ActiveOrder(models.Model):
 
 
 class OrderStatusChange(models.Model):
-    order = models.ForeignKey(ActiveOrder, on_delete=models.CASCADE, default=None)
+    order = models.ForeignKey(ActiveOrder, on_delete=models.CASCADE)
     pub_date = models.DateField(auto_now_add=True)
-    change_owner = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
-    previous_state = models.CharField(max_length=1, choices=ActiveOrder.order_statuses, default=None)
-    new_state = models.CharField(max_length=1, choices=ActiveOrder.order_statuses, default=None)
+    change_owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    previous_state = models.CharField(max_length=1, choices=ActiveOrder.order_statuses)
+    new_state = models.CharField(max_length=1, choices=ActiveOrder.order_statuses)
 
 
 class UnactiveOrder(models.Model):
-    owner = models.ForeignKey(Group, on_delete=models.CASCADE, default=None)
-    order_number = models.CharField(max_length=14, unique=True, default=None)
-    pub_date = models.CharField(max_length=10, default=None)
-    unactivation_date = models.CharField('date_deleted', default='25.09.20',
-                                         max_length=10)
-    order_status = models.CharField(max_length=1, default='4')
+    owner = models.ForeignKey(Group, on_delete=models.CASCADE)
+    order_number = models.CharField(max_length=14, unique=True)
+    pub_date = models.DateField()
+    unactivation_date = models.DateField(auto_now_add=True)
     image = models.CharField(max_length=20, default='?')
 
     def __str__(self):
