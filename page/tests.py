@@ -1681,3 +1681,10 @@ class UnactiveOrderTestCase(TestCase):
         unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
         self.assertEqual(UnactiveOrder.objects.count(), 2)
         self.assertEqual(unactive_order.order_number, 'False')
+
+    def test_create_with_none_as_order_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=None,
+                                           pub_date=self.active_order.pub_date, image=self.active_order.image)
+            self.assertRaises(IntegrityError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
