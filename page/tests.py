@@ -2049,3 +2049,22 @@ class MessageThreadTestCase(TestCase):
         thread = MessagesThread.objects.get(pk=thread.pk)
         self.assertEqual(MessagesThread.objects.count(), 4)
         self.assertEqual(thread.subject, 'Subject')
+
+    def test_create_with_int_as_subject(self):
+        thread = MessagesThread(subject=1)
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 1)
+        self.assertEqual(thread.subject, '1')
+
+        thread = MessagesThread(subject='0')
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 2)
+        self.assertEqual(thread.subject, '0')
+
+        thread = MessagesThread(subject=-1)
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 3)
+        self.assertEqual(thread.subject, '-1')
