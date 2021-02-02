@@ -2005,3 +2005,22 @@ class UnactiveOrderTestCase(TestCase):
         unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
         self.assertEqual(UnactiveOrder.objects.count(), 1)
         self.assertEqual(str(unactive_order), self.active_order.order_number)
+
+
+class MessageThreadTestCase(TestCase):
+    def setUp(self):
+        names = ['z4l', 'besart', 'kasia', 'administracja', 'Pomoc techniczna', 'druk']
+        for name in names:
+            group = Group(name=name)
+            group.save()
+        self.groups = Group.objects.all()
+
+    def test_create(self):
+        thread = MessagesThread(subject='Subject')
+        thread.save()
+        thread.groups.set(self.groups[:3])
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        for group in self.groups[:3]:
+            self.assertIn(group, thread.groups.all())
+        self.assertEqual(MessagesThread.objects.count(), 1)
+        self.assertEqual(thread.subject, 'Subject')
