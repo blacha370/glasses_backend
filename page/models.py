@@ -6,7 +6,7 @@ from django.contrib.auth.models import User, Group
 class ActiveOrder(models.Model):
     owner = models.ForeignKey(Group, on_delete=models.CASCADE, default=None)
     order_number = models.CharField(max_length=14, unique=True, default=None)
-    pub_date = models.CharField(max_length=10, default=None)
+    pub_date = models.DateField(auto_now_add=True)
     order_statuses = [('1', 'Nowe'),
                       ('2', 'W przygotowaniu'),
                       ('3', 'Wysłane'),
@@ -20,24 +20,33 @@ class ActiveOrder(models.Model):
     def __str__(self):
         return self.order_number
 
-    def update_status(self, new_status):
-        self.order_status = new_status
-        self.save()
-        if self.order_status == '4':
-            self.complete_order()
+    def update_status(self, new_status=None):
+        if new_status is None:
+            self.order_status = self.order_statuses[self.order_statuses.index(self.order_status) + 1]
+            if self.order_status == ('4', 'Zakończone'):
+                self.complete_order()
+                return None
+            return True
+        elif new_status in self.order_statuses:
+            self.order_status = new_status
+            self.save()
+            if self.order_status == ('4', 'Zakończone'):
+                self.complete_order()
+                return None
+            return True
+        return False
 
     def complete_order(self):
         unactive = UnactiveOrder(order_number=self.order_number, pub_date=self.pub_date, image=self.image,
-                                 owner=self.owner, unactivation_date=dateformat.format(timezone.now(), 'd.m.y'))
+                                 owner=self.owner)
         unactive.save()
         self.delete()
 
 
 class OrderStatusChange(models.Model):
     order = models.ForeignKey(ActiveOrder, on_delete=models.CASCADE, default=None)
-    date = models.CharField('date', default='09:03 25.09.20',
-                            max_length=16)
-    change_owner = models.CharField(max_length=20, default=None)
+    pub_date = models.DateField(auto_now_add=True)
+    change_owner = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     previous_state = models.CharField(max_length=1, choices=ActiveOrder.order_statuses, default=None)
     new_state = models.CharField(max_length=1, choices=ActiveOrder.order_statuses, default=None)
 
