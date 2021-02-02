@@ -1259,3 +1259,29 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(unactive_order.order_number, active_order.order_number)
         self.assertEqual(unactive_order.image, active_order.image)
         self.assertEqual(unactive_order.owner, active_order.owner)
+
+
+class OrderStatusChangeTestCase(TestCase):
+    def setUp(self):
+        names = ['z4l', 'besart', 'kasia', 'administracja', 'Pomoc techniczna', 'druk']
+        for name in names:
+            group = Group(name=name)
+            group.save()
+        self.user = User(username='User')
+        self.user.save()
+        self.groups = Group.objects.all()
+        self.active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234',
+                                        order_status=ActiveOrder.order_statuses[0], image='000', divided='całe',
+                                        tracking_number='0123456789012345678901')
+        self.active_order.save()
+
+    def test_create_order_status_change(self):
+        status_change = OrderStatusChange(order=self.active_order, change_owner=self.user,
+                                          previous_state=self.active_order.order_status,
+                                          new_state=ActiveOrder.order_statuses[1])
+        status_change.save()
+        self.assertEqual(status_change.order, self.active_order)
+        self.assertEqual(status_change.change_owner, self.user)
+        self.assertEqual(status_change.previous_state, ActiveOrder.order_statuses[0])
+        self.assertEqual(status_change.new_state, ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 1)
