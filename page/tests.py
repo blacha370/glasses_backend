@@ -1385,3 +1385,24 @@ class OrderStatusChangeTestCase(TestCase):
                               new_state=ActiveOrder.order_statuses[1])
             self.assertRaises(IntegrityError, status_change.save)
         self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_with_string_as_change_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner='',
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner=' ',
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner='\n ',
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=self.active_order, change_owner='user',
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
