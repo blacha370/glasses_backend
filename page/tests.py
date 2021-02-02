@@ -2131,3 +2131,13 @@ class MessageThreadTestCase(TestCase):
         thread.save()
         self.assertEqual(MessagesThread.objects.count(), 1)
         self.assertEqual(str(thread), thread.subject)
+
+    def test_delete_method(self):
+        thread = MessagesThread(subject='Subject')
+        thread.save()
+        self.assertEqual(MessagesThread.objects.count(), 1)
+        thread.delete_thread()
+        self.assertEqual(ArchiveThread.objects.count(), 1)
+        self.assertEqual(MessagesThread.objects.count(), 0)
+        archive_thread = ArchiveThread.objects.all()[0]
+        self.assertEqual(archive_thread.subject, 'Subject')
