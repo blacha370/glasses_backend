@@ -2125,3 +2125,9 @@ class MessageThreadTestCase(TestCase):
         thread = MessagesThread.objects.get(pk=thread.pk)
         self.assertEqual(MessagesThread.objects.count(), 4)
         self.assertEqual(thread.subject, 'set()')
+
+    def test_str_method(self):
+        thread = MessagesThread(subject='Subject')
+        thread.save()
+        self.assertEqual(MessagesThread.objects.count(), 1)
+        self.assertEqual(str(thread), thread.subject)
