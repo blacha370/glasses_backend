@@ -1600,3 +1600,19 @@ class ActiveOrderTestCase(TestCase):
         active_order.save()
         self.assertFalse(active_order.update_status(None))
         self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+
+    def test_update_status_with_structure_as_new_status(self):
+        active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                                   image='000', divided='całe', tracking_number='0123456789012345678901')
+        active_order.save()
+        self.assertFalse(active_order.update_status(list()))
+        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+
+        self.assertFalse(active_order.update_status(dict()))
+        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+
+        self.assertFalse(active_order.update_status(tuple()))
+        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+
+        self.assertFalse(active_order.update_status(set()))
+        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
