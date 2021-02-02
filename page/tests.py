@@ -1977,3 +1977,11 @@ class UnactiveOrderTestCase(TestCase):
         unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
         self.assertEqual(UnactiveOrder.objects.count(), 4)
         self.assertEqual(unactive_order.image, 'set()')
+
+    def test_create_without_image(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.image, '?')
