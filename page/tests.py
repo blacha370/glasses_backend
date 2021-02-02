@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.db.utils import IntegrityError
+from django.core.exceptions import ValidationError
 from django.db.transaction import atomic
+import datetime
 from .models import *
 
 
@@ -1724,3 +1726,53 @@ class UnactiveOrderTestCase(TestCase):
                                            image=self.active_order.image)
             self.assertRaises(IntegrityError, unactive_order.save)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_string_as_pub_date_number(self):
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date=' ', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='\n ', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='date', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='01.01.2020', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='2020.01.01', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                           pub_date='01-01-2020', image=self.active_order.image)
+            self.assertRaises(ValidationError, unactive_order.save)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date='2020-01-01', image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.pub_date, datetime.date(year=2020, month=1, day=1))
