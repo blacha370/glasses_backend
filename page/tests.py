@@ -2068,3 +2068,16 @@ class MessageThreadTestCase(TestCase):
         thread = MessagesThread.objects.get(pk=thread.pk)
         self.assertEqual(MessagesThread.objects.count(), 3)
         self.assertEqual(thread.subject, '-1')
+
+    def test_create_with_float_as_subject(self):
+        thread = MessagesThread(subject=1.1)
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 1)
+        self.assertEqual(thread.subject, '1.1')
+
+        thread = MessagesThread(subject=-1.1)
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 2)
+        self.assertEqual(thread.subject, '-1.1')
