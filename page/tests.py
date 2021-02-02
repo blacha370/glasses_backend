@@ -1572,3 +1572,24 @@ class UnactiveOrderTestCase(TestCase):
                                            pub_date=self.active_order.pub_date, image=self.active_order.image)
             self.assertRaises(IntegrityError, unactive_order.save)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_structure_as_owner(self):
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=list(), order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=dict(), order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=tuple(), order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, UnactiveOrder, owner=set(), order_number=self.active_order.order_number,
+                              pub_date=self.active_order.pub_date, image=self.active_order.image)
+        self.assertEqual(UnactiveOrder.objects.count(), 0)
