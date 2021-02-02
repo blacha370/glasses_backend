@@ -1285,3 +1285,29 @@ class OrderStatusChangeTestCase(TestCase):
         self.assertEqual(status_change.previous_state, ActiveOrder.order_statuses[0])
         self.assertEqual(status_change.new_state, ActiveOrder.order_statuses[1])
         self.assertEqual(OrderStatusChange.objects.count(), 1)
+
+    def test_create_order_status_change_with_string_as_order(self):
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order='', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order=' ', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order='\n ', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order='order', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+        with atomic():
+            self.assertRaises(ValueError, OrderStatusChange, order='1', change_owner=self.user,
+                              previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
