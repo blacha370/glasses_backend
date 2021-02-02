@@ -1513,3 +1513,11 @@ class ActiveOrderTestCase(TestCase):
             active_order = ActiveOrder()
             self.assertRaises(IntegrityError, active_order.save)
         self.assertEqual(ActiveOrder.objects.count(), 0)
+
+    def test_str_method(self):
+        active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                                   order_status='1', image='000', divided='całe',
+                                   tracking_number='0123456789012345678901')
+        active_order.save()
+        active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
+        self.assertEqual(str(active_order), 'QWERTYUIOP1234')
