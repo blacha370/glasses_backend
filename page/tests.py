@@ -1667,3 +1667,17 @@ class UnactiveOrderTestCase(TestCase):
         self.assertEqual(UnactiveOrder.objects.count(), 2)
         self.assertEqual(unactive_order.order_number, '-1.1')
 
+    def test_create_with_bool_as_order_number(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=True,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.order_number, 'True')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=False,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.order_number, 'False')
