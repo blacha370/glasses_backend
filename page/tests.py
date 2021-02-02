@@ -1631,3 +1631,16 @@ class ActiveOrderTestCase(TestCase):
         self.assertEqual(active_order.order_status, ('4', 'Zakończone'))
         self.assertEqual(ActiveOrder.objects.count(), 0)
         self.assertEqual(UnactiveOrder.objects.count(), 1)
+
+    def test_complete_order(self):
+        active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                                   image='000', divided='całe', tracking_number='0123456789012345678901')
+        active_order.save()
+        active_order.complete_order()
+        self.assertEqual(ActiveOrder.objects.count(), 0)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        unactive_order = UnactiveOrder.objects.get(order_number='QWERTYUIOP1234')
+        self.assertEqual(unactive_order.order_number, active_order.order_number)
+        self.assertEqual(unactive_order.pub_date, active_order.pub_date)
+        self.assertEqual(unactive_order.image, active_order.image)
+        self.assertEqual(unactive_order.owner, active_order.owner)
