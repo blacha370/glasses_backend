@@ -1860,3 +1860,32 @@ class UnactiveOrderTestCase(TestCase):
                                            image=self.active_order.image)
             self.assertRaises(IntegrityError, unactive_order.save)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_string_as_image(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image='')
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.image, '')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'a',
+                                       pub_date=self.active_order.pub_date, image=' ')
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.image, ' ')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'b',
+                                       pub_date=self.active_order.pub_date, image='\n ')
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 3)
+        self.assertEqual(unactive_order.image, '\n ')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number + 'c',
+                                       pub_date=self.active_order.pub_date, image='image')
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 4)
+        self.assertEqual(unactive_order.image, 'image')
