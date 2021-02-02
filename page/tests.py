@@ -1600,3 +1600,32 @@ class UnactiveOrderTestCase(TestCase):
                                            pub_date=self.active_order.pub_date, image=self.active_order.image)
             self.assertRaises(IntegrityError, unactive_order.save)
         self.assertEqual(UnactiveOrder.objects.count(), 0)
+
+    def test_create_with_string_as_order_number(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number='',
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
+        self.assertEqual(unactive_order.order_number, '')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=' ',
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 2)
+        self.assertEqual(unactive_order.order_number, ' ')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number='\n ',
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 3)
+        self.assertEqual(unactive_order.order_number, '\n ')
+
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number='number',
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        unactive_order = UnactiveOrder.objects.get(pk=unactive_order.pk)
+        self.assertEqual(UnactiveOrder.objects.count(), 4)
+        self.assertEqual(unactive_order.order_number, 'number')
