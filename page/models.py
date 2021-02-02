@@ -64,10 +64,7 @@ class UnactiveOrder(models.Model):
 
 class MessagesThread(models.Model):
     subject = models.CharField(max_length=14, default=None)
-    creator = models.ForeignKey(Group, default=None, on_delete=models.CASCADE,
-                                related_name='creator')
-    reciever = models.ForeignKey(Group, default=None, on_delete=models.CASCADE,
-                                 related_name='reciever')
+    groups = models.ManyToManyField(Group)
 
     def __str__(self):
         return self.subject
