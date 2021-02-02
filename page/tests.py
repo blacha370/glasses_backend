@@ -2024,3 +2024,28 @@ class MessageThreadTestCase(TestCase):
             self.assertIn(group, thread.groups.all())
         self.assertEqual(MessagesThread.objects.count(), 1)
         self.assertEqual(thread.subject, 'Subject')
+
+    def test_create_with_string_as_subject(self):
+        thread = MessagesThread(subject='')
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 1)
+        self.assertEqual(thread.subject, '')
+
+        thread = MessagesThread(subject=' ')
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 2)
+        self.assertEqual(thread.subject, ' ')
+
+        thread = MessagesThread(subject='\n ')
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 3)
+        self.assertEqual(thread.subject, '\n ')
+
+        thread = MessagesThread(subject='Subject')
+        thread.save()
+        thread = MessagesThread.objects.get(pk=thread.pk)
+        self.assertEqual(MessagesThread.objects.count(), 4)
+        self.assertEqual(thread.subject, 'Subject')
