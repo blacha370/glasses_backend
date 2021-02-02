@@ -1480,3 +1480,24 @@ class OrderStatusChangeTestCase(TestCase):
                                                new_state=ActiveOrder.order_statuses[1])
             self.assertRaises(IntegrityError, status_change.save)
         self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+
+class UnactiveOrderTestCase(TestCase):
+    def setUp(self):
+        names = ['z4l', 'besart', 'kasia', 'administracja', 'Pomoc techniczna', 'druk']
+        for name in names:
+            group = Group(name=name)
+            group.save()
+        self.user = User(username='User')
+        self.user.save()
+        self.groups = Group.objects.all()
+        self.active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234',
+                                        order_status=ActiveOrder.order_statuses[0], image='000', divided='całe',
+                                        tracking_number='0123456789012345678901')
+        self.active_order.save()
+
+    def test_create(self):
+        unactive_order = UnactiveOrder(owner=self.active_order.owner, order_number=self.active_order.order_number,
+                                       pub_date=self.active_order.pub_date, image=self.active_order.image)
+        unactive_order.save()
+        self.assertEqual(UnactiveOrder.objects.count(), 1)
