@@ -1349,3 +1349,11 @@ class OrderStatusChangeTestCase(TestCase):
             self.assertRaises(ValueError, OrderStatusChange, order=False, change_owner=self.user,
                               previous_state=self.active_order.order_status, new_state=ActiveOrder.order_statuses[1])
         self.assertEqual(OrderStatusChange.objects.count(), 0)
+
+    def test_create_order_status_change_with_none_as_order(self):
+        with atomic():
+            status_change = OrderStatusChange(order=None, change_owner=self.user,
+                                              previous_state=self.active_order.order_status,
+                                              new_state=ActiveOrder.order_statuses[1])
+            self.assertRaises(IntegrityError, status_change.save)
+        self.assertEqual(OrderStatusChange.objects.count(), 0)
