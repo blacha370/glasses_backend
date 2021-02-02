@@ -1521,3 +1521,20 @@ class ActiveOrderTestCase(TestCase):
         active_order.save()
         active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
         self.assertEqual(str(active_order), 'QWERTYUIOP1234')
+
+    def test_update_status(self):
+        active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', pub_date='01.01.2020',
+                                   image='000', divided='całe', tracking_number='0123456789012345678901')
+        active_order.save()
+        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[1]))
+        self.assertEqual(active_order.order_status, ('2', 'W przygotowaniu'))
+
+        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[2]))
+        self.assertEqual(active_order.order_status, ('3', 'Wysłane'))
+
+        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[4]))
+        self.assertEqual(active_order.order_status, ('5', 'Anulowane'))
+
+        self.assertIsNone(active_order.update_status(ActiveOrder.order_statuses[3]))
+        self.assertEqual(active_order.order_status, ('4', 'Zakończone'))
+        self.assertEqual(ActiveOrder.objects.count(), 0)
