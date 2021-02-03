@@ -2357,3 +2357,20 @@ class MessageTestCase(TestCase):
         self.assertEqual(message.thread, self.thread)
         self.assertEqual(message.message_op, self.user)
         self.assertEqual(message.message_text, '-1')
+
+    def test_create_with_float_as_message_text(self):
+        message = Message(thread=self.thread, message_op=self.user, message_text=1.1)
+        message.save()
+        message = Message.objects.get(pk=message.pk)
+        self.assertEqual(Message.objects.count(), 1)
+        self.assertEqual(message.thread, self.thread)
+        self.assertEqual(message.message_op, self.user)
+        self.assertEqual(message.message_text, '1.1')
+
+        message = Message(thread=self.thread, message_op=self.user, message_text=-1.1)
+        message.save()
+        message = Message.objects.get(pk=message.pk)
+        self.assertEqual(Message.objects.count(), 2)
+        self.assertEqual(message.thread, self.thread)
+        self.assertEqual(message.message_op, self.user)
+        self.assertEqual(message.message_text, '-1.1')
