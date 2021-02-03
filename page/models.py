@@ -21,15 +21,16 @@ class ActiveOrder(models.Model):
 
     def update_status(self, new_status=None):
         if new_status is None:
-            if self.order_status == ('4', 'Zakończone'):
+            if self.order_status == '4':
                 return None
-            self.order_status = self.order_statuses[self.order_statuses.index(self.order_status) + 1]
+            self.order_status = self.order_statuses[int(self.order_status)][0]
             return True
-        elif new_status in self.order_statuses:
-            if self.order_status == ('4', 'Zakończone'):
+        elif new_status in '12345':
+            if self.order_status == '4':
                 return None
             self.order_status = new_status
             self.save()
+            print(self.order_status)
             return True
         return False
 
