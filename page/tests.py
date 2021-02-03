@@ -2488,43 +2488,61 @@ class NotificationTestCase(TestCase):
 
     def test_add_notification_with_string_as_user(self):
         self.assertIsNone(Notification.add_notification('', self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification(' ', self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification('\n ', self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification('User', self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification('1', self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
     def test_add_notification_with_int_as_user(self):
         self.assertIsNone(Notification.add_notification(1, self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification(0, self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification(-1, self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
     def test_add_notification_with_float_as_user(self):
         self.assertIsNone(Notification.add_notification(1.1, self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification(-1.1, self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
     def test_add_notification_with_bool_as_user(self):
         self.assertIsNone(Notification.add_notification(True, self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification(False, self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
     def test_add_notification_with_none_as_user(self):
         self.assertIsNone(Notification.add_notification(None, self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
     def test_add_notification_with_structure_as_user(self):
         self.assertIsNone(Notification.add_notification(list(), self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification(dict(), self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification(tuple(), self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
         self.assertIsNone(Notification.add_notification(set(), self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
 
     def test_add_notification_without_user(self):
         self.assertRaises(TypeError, Notification.add_notification, thread=self.thread)
+        self.assertEqual(Notification.objects.count(), 0)
