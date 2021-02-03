@@ -2546,3 +2546,19 @@ class NotificationTestCase(TestCase):
     def test_add_notification_without_user(self):
         self.assertRaises(TypeError, Notification.add_notification, thread=self.thread)
         self.assertEqual(Notification.objects.count(), 0)
+
+    def test_add_notification_with_string_as_thread(self):
+        self.assertIsNone(Notification.add_notification(self.user, ''))
+        self.assertEqual(Notification.objects.count(), 0)
+
+        self.assertIsNone(Notification.add_notification(self.user, ' '))
+        self.assertEqual(Notification.objects.count(), 0)
+
+        self.assertIsNone(Notification.add_notification(self.user, '\n '))
+        self.assertEqual(Notification.objects.count(), 0)
+
+        self.assertIsNone(Notification.add_notification(self.user, 'Subject'))
+        self.assertEqual(Notification.objects.count(), 0)
+
+        self.assertIsNone(Notification.add_notification(self.user, '1'))
+        self.assertEqual(Notification.objects.count(), 0)
