@@ -2586,3 +2586,7 @@ class NotificationTestCase(TestCase):
 
         self.assertIsNone(Notification.add_notification(self.user, False))
         self.assertEqual(Notification.objects.count(), 0)
+
+    def test_add_notification_with_none_as_thread(self):
+        self.assertIsNone(Notification.add_notification(self.user, None))
+        self.assertEqual(Notification.objects.count(), 0)
