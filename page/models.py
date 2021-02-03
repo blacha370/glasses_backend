@@ -65,34 +65,32 @@ class UnactiveOrder(models.Model):
 class MessagesThread(models.Model):
     subject = models.CharField(max_length=14, default=None)
     groups = models.ManyToManyField(Group)
+    archive = models.BooleanField(default=False)
 
     def __str__(self):
         return self.subject
 
     def delete_thread(self):
-        archive_thread = ArchiveThread(subject=self.subject)
-        archive_thread.save()
-        msgs = Message.objects.filter(thread=self.id)
-        for msg in msgs:
-            msg.delete_message(archive_thread)
-        self.delete()
+        self.archive = True
+        messages = Message.objects.filter(thread=self)
+        for message in messages:
+            message.delete_message()
+        self.save()
 
 
 class Message(models.Model):
     thread = models.ForeignKey(MessagesThread, on_delete=models.CASCADE, default=None)
-    message_op = models.CharField(max_length=20, default=None)
+    message_op = models.ForeignKey(User, on_delete=models.CASCADE)
     message_text = models.CharField(max_length=200, default=None)
-    message_date = models.CharField('date', default='09:03 25.09.20',
-                                    max_length=16)
+    message_date = models.DateTimeField(auto_now_add=True)
+    archive = models.BooleanField(default=False)
 
     def __str__(self):
         return self.thread.subject
 
-    def delete_message(self, thread):
-        archive_message = ArchiveMessage(thread=thread, message_op=self.message_op, message_text=self.message_text,
-                                         message_date=self.message_date)
-        archive_message.save()
-        self.delete()
+    def delete_message(self):
+        self.archive = True
+        self.save()
 
 
 class Notification(models.Model):
@@ -102,20 +100,14 @@ class Notification(models.Model):
     def __str__(self):
         return self.thread.subject
 
-
-class ArchiveThread(models.Model):
-    subject = models.CharField(max_length=14, default=None)
-
-    def __str__(self):
-        return self.subject
-
-
-class ArchiveMessage(models.Model):
-    thread = models.ForeignKey(ArchiveThread, on_delete=models.CASCADE, default=None)
-    message_op = models.CharField(max_length=20, default=None)
-    message_text = models.CharField(max_length=200, default=None)
-    message_date = models.CharField('date', default='09:03 25.09.20',
-                                    max_length=16)
-
-    def __str__(self):
-        return self.thread.subject
+    @classmethod
+    def add_notification(cls, user: User, thread: MessagesThread):
+        if user.groups.all().intersection(thread.groups.all()):
+            try:
+                notification = Notification.objects.get(user=user, thread=thread)
+                return notification
+            except Notification.DoesNotExist:
+                notification = Notification(user=user, thread=thread)
+                return notification
+        else:
+            return None
