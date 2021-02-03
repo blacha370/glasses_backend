@@ -1,5 +1,5 @@
-from .models import ActiveOrder, UnactiveOrder, OrderStatusChange
-from django.utils import timezone, dateformat
+from .models import ActiveOrder, OrderStatusChange
+from datetime import date
 from django.contrib.auth.models import Group
 
 
@@ -7,8 +7,6 @@ def iterate_order_add(f, request):
     info = list()
     all_orders = set()
     for order in ActiveOrder.objects.all():
-        all_orders.add(order.order_number)
-    for order in UnactiveOrder.objects.all():
         all_orders.add(order.order_number)
     first = True
     i = 1
@@ -42,43 +40,21 @@ def iterate_order_add(f, request):
     return info
 
 
-def get_orders_page(user, orders_type: object, page_len: int, current_page: int):
-    try:
-        user_group = user.groups.exclude(name='administracja')[0]
-    except IndexError:
-        order_list = orders_type.objects.all().count()
-        if order_list <= page_len:
-            return orders_type.objects.order_by('order_status', '-pub_date').reverse()
-        elif order_list > (current_page - 1) * page_len:
-            orders = orders_type.objects.order_by('order_status', '-pub_date').reverse()
-            return orders[(current_page - 1) * page_len:current_page * page_len]
+def get_orders_page(user, page_len: int, current_page: int):
+    orders = ActiveOrder.objects.exclude(order_status='4').order_by('order_status', 'pub_date').reverse()
+    if Group.objects.get(name='druk') in user.groups.all():
+        return orders.exclude(order_status='5')[(current_page-1) * page_len:current_page * page_len]
+    elif Group.objects.get(name='4dich') in user.groups.all():
+        return orders.filter(owner=Group.objects.get(name='4dich'))[(current_page-1) * page_len:current_page * page_len]
+    elif Group.objects.get(name='besart') in user.groups.all():
+        return orders.filter(owner=Group.objects.get(name='besart')
+                             )[(current_page-1) * page_len:current_page * page_len]
+    elif Group.objects.get(name='kasia') in user.groups.all():
+        return orders.filter(owner=Group.objects.get(name='kasia'))[(current_page-1) * page_len:current_page * page_len]
+    elif Group.objects.get(name='Pomoc techniczna') in user.groups.all():
+        return orders[(current_page-1) * page_len:current_page * page_len]
     else:
-        if user_group.name == 'druk':
-            order_list = orders_type.objects.all().count()
-            if order_list <= page_len:
-                orders = orders_type.objects.order_by('order_status', '-pub_date').reverse()
-                return orders[(current_page - 1) * page_len:current_page * page_len]
-            elif order_list > (current_page - 1) * page_len:
-                orders = orders_type.objects.order_by('order_status', '-pub_date').reverse()
-                return orders[(current_page - 1) * page_len:current_page * page_len]
-        elif user_group.name == 'Pomoc techniczna':
-            order_list = orders_type.objects.all().count()
-            if order_list <= page_len:
-                orders = orders_type.objects.order_by('order_status', '-pub_date').reverse()
-                return orders[(current_page - 1) * page_len:current_page * page_len]
-            elif order_list > (current_page - 1) * page_len:
-                orders = orders_type.objects.order_by('order_status', '-pub_date').reverse()
-                return orders[(current_page - 1) * page_len:current_page * page_len]
-        else:
-            order_list = orders_type.objects.filter(owner=user_group).count()
-            if order_list <= page_len:
-                orders = orders_type.objects.filter(owner=user_group)
-                orders = orders.order_by('order_status', '-pub_date').reverse()
-                return orders[(current_page - 1) * page_len:current_page * page_len]
-            elif order_list > (current_page - 1) * page_len:
-                orders = orders_type.objects.filter(owner=user_group)
-                orders = orders.order_by('order_status', '-pub_date').reverse()
-                return orders[(current_page - 1) * page_len:current_page * page_len]
+        return ActiveOrder.objects.none()
 
 
 def get_order_owner(order_number):
@@ -93,52 +69,45 @@ def get_order_owner(order_number):
 
 
 def create_order(line, request, owner):
+    date_line = line[0].split('.')
+    pub = date(day=int(date_line[0]), month=int(date_line[1]), year=int(date_line[2]))
     if len(line) == 5:
         if line[3].startswith('1'):
-            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
-                                image=line[2].replace('.jpg', ''), divided='całe',
-                                owner=owner, tracking_number=line[4])
+            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, image=line[2].replace('.jpg', ''),
+                                divided='całe', owner=owner, tracking_number=line[4])
         elif line[3].startswith('2'):
-            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
-                                image=line[2].replace('.jpg', ''), divided='połówka',
-                                owner=owner)
+            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, image=line[2].replace('.jpg', ''),
+                                divided='połówka', owner=owner)
         else:
-            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
-                                image=line[2].replace('.jpg', ''),
+            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, image=line[2].replace('.jpg', ''),
                                 owner=owner)
     elif len(line) == 4:
         if line[3].startswith('1'):
-            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
-                                image=line[2].replace('.jpg', ''), divided='całe',
-                                owner=owner)
+            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, image=line[2].replace('.jpg', ''),
+                                divided='całe', owner=owner)
         elif line[3].startswith('2'):
-            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
-                                image=line[2].replace('.jpg', ''), divided='połówka',
-                                owner=owner)
+            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, image=line[2].replace('.jpg', ''),
+                                divided='połówka', owner=owner)
         else:
-            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
-                                image=line[2].replace('.jpg', ''),
+            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, image=line[2].replace('.jpg', ''),
                                 owner=owner)
     elif len(line) == 3:
         if line[3].endswith('.jpg'):
-            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
-                                image=line[2].replace('.jpg', ''), divided='brak',
-                                owner=owner)
+            order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, image=line[2].replace('.jpg', ''),
+                                divided='brak', owner=owner)
         else:
             if line[2].startswith('1'):
-                order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
-                                    divided='całe', owner=owner)
+                order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, divided='całe', owner=owner)
             elif line[2].startswith('2'):
-                order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
-                                    divided='połówka', owner=owner)
-            else:
-                order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
+                order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, divided='połówka',
                                     owner=owner)
+            else:
+                order = ActiveOrder(order_number=line[1], order_status='1', pub_date=pub, owner=owner)
     else:
-        order = ActiveOrder(order_number=line[1], order_status='1', pub_date=line[0],
+        order = ActiveOrder(order_number=line[1], order_status='1',
+                            pub_date=pub,
                             owner=owner)
-    status = OrderStatusChange(order=order, change_owner=request.user.username,
-                               previous_state='1', new_state='1',
-                               date=dateformat.format(timezone.now(), 'H:i d.m.y'))
+    status = OrderStatusChange(order=order, change_owner=request.user,
+                               previous_state='1', new_state='1')
     order.save()
     status.save()
