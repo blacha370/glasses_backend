@@ -2516,3 +2516,12 @@ class NotificationTestCase(TestCase):
 
     def test_add_notification_with_none_as_user(self):
         self.assertIsNone(Notification.add_notification(None, self.thread))
+
+    def test_add_notification_with_structure_as_user(self):
+        self.assertIsNone(Notification.add_notification(list(), self.thread))
+
+        self.assertIsNone(Notification.add_notification(dict(), self.thread))
+
+        self.assertIsNone(Notification.add_notification(tuple(), self.thread))
+
+        self.assertIsNone(Notification.add_notification(set(), self.thread))
