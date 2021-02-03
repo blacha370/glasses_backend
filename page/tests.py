@@ -1172,7 +1172,7 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder.objects.get(order_number='QWERTYUIOP1234')
         self.assertEqual(active_order.owner.name, 'z4l')
         self.assertEqual(active_order.order_number, 'QWERTYUIOP1234')
-        self.assertEqual(active_order.order_status, "('1', 'Nowe')")
+        self.assertEqual(active_order.order_status, '1')
         self.assertEqual(active_order.image, '000')
         self.assertEqual(active_order.divided, 'całe')
         self.assertEqual(active_order.tracking_number, '0123456789012345678901')
@@ -1196,21 +1196,21 @@ class ActiveOrderTestCase(TestCase):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', image='000', divided='całe',
                                    tracking_number='0123456789012345678901', pub_date=datetime.date.today())
         active_order.save()
-        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[1]))
-        self.assertEqual(active_order.order_status, ('2', 'W przygotowaniu'))
+        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[1][0]))
+        self.assertEqual(active_order.order_status, '2')
 
-        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[2]))
-        self.assertEqual(active_order.order_status, ('3', 'Wysłane'))
+        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[2][0]))
+        self.assertEqual(active_order.order_status, '3')
 
-        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[4]))
-        self.assertEqual(active_order.order_status, ('5', 'Anulowane'))
+        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[4][0]))
+        self.assertEqual(active_order.order_status, '5')
 
-        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[3]))
-        self.assertEqual(active_order.order_status, ('4', 'Zakończone'))
+        self.assertTrue(active_order.update_status(ActiveOrder.order_statuses[3][0]))
+        self.assertEqual(active_order.order_status, '4')
         self.assertEqual(ActiveOrder.objects.count(), 1)
 
-        self.assertIsNone(active_order.update_status(ActiveOrder.order_statuses[2]))
-        self.assertEqual(active_order.order_status, ('4', 'Zakończone'))
+        self.assertIsNone(active_order.update_status(ActiveOrder.order_statuses[2][0]))
+        self.assertEqual(active_order.order_status, '4')
         self.assertEqual(ActiveOrder.objects.count(), 1)
 
     def test_update_status_with_string_as_new_status(self):
@@ -1218,91 +1218,91 @@ class ActiveOrderTestCase(TestCase):
                                    tracking_number='0123456789012345678901', pub_date=datetime.date.today())
         active_order.save()
         self.assertFalse(active_order.update_status(''))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status(' '))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status('\n '))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status('new_status'))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
-        self.assertFalse(active_order.update_status("('2', 'W przygotowaniu')"))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertTrue(active_order.update_status('2'))
+        self.assertEqual(active_order.order_status, '2')
 
     def test_update_status_with_int_as_new_status(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', image='000', divided='całe',
                                    tracking_number='0123456789012345678901', pub_date=datetime.date.today())
         active_order.save()
         self.assertFalse(active_order.update_status(1))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status(0))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status(-1))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status(9999))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
     def test_update_status_with_float_as_new_status(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', image='000', divided='całe',
                                    tracking_number='0123456789012345678901', pub_date=datetime.date.today())
         active_order.save()
         self.assertFalse(active_order.update_status(1.1))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status(-1.1))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
     def test_update_status_with_bool_as_new_status(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', image='000', divided='całe',
                                    tracking_number='0123456789012345678901', pub_date=datetime.date.today())
         active_order.save()
         self.assertFalse(active_order.update_status(True))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status(False))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
     def test_update_status_with_none_as_new_status(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', image='000', divided='całe',
                                    tracking_number='0123456789012345678901', pub_date=datetime.date.today())
         active_order.save()
         self.assertTrue(active_order.update_status(None))
-        self.assertEqual(active_order.order_status, ('2', 'W przygotowaniu'))
+        self.assertEqual(active_order.order_status, '2')
 
     def test_update_status_with_structure_as_new_status(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', image='000', divided='całe',
                                    tracking_number='0123456789012345678901', pub_date=datetime.date.today())
         active_order.save()
         self.assertFalse(active_order.update_status(list()))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status(dict()))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status(tuple()))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
         self.assertFalse(active_order.update_status(set()))
-        self.assertEqual(active_order.order_status, ('1', 'Nowe'))
+        self.assertEqual(active_order.order_status, '1')
 
     def test_update_status_without_new_status(self):
         active_order = ActiveOrder(owner=self.groups[0], order_number='QWERTYUIOP1234', image='000', divided='całe',
                                    tracking_number='0123456789012345678901', pub_date=datetime.date.today())
         active_order.save()
         self.assertTrue(active_order.update_status())
-        self.assertEqual(active_order.order_status, ('2', 'W przygotowaniu'))
+        self.assertEqual(active_order.order_status, '2')
 
         self.assertTrue(active_order.update_status())
-        self.assertEqual(active_order.order_status, ('3', 'Wysłane'))
+        self.assertEqual(active_order.order_status, '3')
 
         self.assertTrue(active_order.update_status())
-        self.assertEqual(active_order.order_status, ('4', 'Zakończone'))
+        self.assertEqual(active_order.order_status, '4')
         self.assertEqual(ActiveOrder.objects.count(), 1)
 
 

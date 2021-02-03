@@ -11,7 +11,7 @@ class ActiveOrder(models.Model):
                       ('3', 'Wysłane'),
                       ('4', 'Zakończone'),
                       ('5', 'Anulowane')]
-    order_status = models.CharField(max_length=1, choices=order_statuses, default=order_statuses[0])
+    order_status = models.CharField(max_length=1, choices=order_statuses, default=order_statuses[0][0])
     image = models.CharField(max_length=20, default='?')
     divided = models.CharField(max_length=8, default='?')
     tracking_number = models.CharField(max_length=22, default='?')
@@ -25,13 +25,15 @@ class ActiveOrder(models.Model):
                 return None
             self.order_status = self.order_statuses[int(self.order_status)][0]
             return True
-        elif new_status in '12345':
-            if self.order_status == '4':
-                return None
-            self.order_status = new_status
-            self.save()
-            print(self.order_status)
-            return True
+        try:
+            if new_status in '12345' and not new_status == '':
+                if self.order_status == '4':
+                    return None
+                self.order_status = new_status
+                self.save()
+                return True
+        except TypeError:
+            pass
         return False
 
 
