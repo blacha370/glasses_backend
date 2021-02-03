@@ -2436,3 +2436,8 @@ class MessageTestCase(TestCase):
             message = Message(thread=self.thread, message_op=self.user)
             self.assertRaises(IntegrityError, message.save)
         self.assertEqual(Message.objects.count(), 0)
+
+    def test_str_method(self):
+        message = Message(thread=self.thread, message_op=self.user, message_text='Text')
+        message.save()
+        self.assertEqual(str(message), 'Subject')
