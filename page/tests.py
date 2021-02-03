@@ -2295,6 +2295,7 @@ class MessageTestCase(TestCase):
     def test_create_with_string_as_message_text(self):
         message = Message(thread=self.thread, message_op=self.user, message_text='')
         message.save()
+        message = Message.objects.get(pk=message.pk)
         self.assertEqual(Message.objects.count(), 1)
         self.assertEqual(message.thread, self.thread)
         self.assertEqual(message.message_op, self.user)
@@ -2302,6 +2303,7 @@ class MessageTestCase(TestCase):
 
         message = Message(thread=self.thread, message_op=self.user, message_text=' ')
         message.save()
+        message = Message.objects.get(pk=message.pk)
         self.assertEqual(Message.objects.count(), 2)
         self.assertEqual(message.thread, self.thread)
         self.assertEqual(message.message_op, self.user)
@@ -2309,6 +2311,7 @@ class MessageTestCase(TestCase):
 
         message = Message(thread=self.thread, message_op=self.user, message_text='\n ')
         message.save()
+        message = Message.objects.get(pk=message.pk)
         self.assertEqual(Message.objects.count(), 3)
         self.assertEqual(message.thread, self.thread)
         self.assertEqual(message.message_op, self.user)
@@ -2316,6 +2319,7 @@ class MessageTestCase(TestCase):
 
         message = Message(thread=self.thread, message_op=self.user, message_text='Text')
         message.save()
+        message = Message.objects.get(pk=message.pk)
         self.assertEqual(Message.objects.count(), 4)
         self.assertEqual(message.thread, self.thread)
         self.assertEqual(message.message_op, self.user)
@@ -2323,7 +2327,33 @@ class MessageTestCase(TestCase):
 
         message = Message(thread=self.thread, message_op=self.user, message_text='1')
         message.save()
+        message = Message.objects.get(pk=message.pk)
         self.assertEqual(Message.objects.count(), 5)
         self.assertEqual(message.thread, self.thread)
         self.assertEqual(message.message_op, self.user)
         self.assertEqual(message.message_text, '1')
+
+    def test_create_with_int_as_message_text(self):
+        message = Message(thread=self.thread, message_op=self.user, message_text=1)
+        message.save()
+        message = Message.objects.get(pk=message.pk)
+        self.assertEqual(Message.objects.count(), 1)
+        self.assertEqual(message.thread, self.thread)
+        self.assertEqual(message.message_op, self.user)
+        self.assertEqual(message.message_text, '1')
+
+        message = Message(thread=self.thread, message_op=self.user, message_text=0)
+        message.save()
+        message = Message.objects.get(pk=message.pk)
+        self.assertEqual(Message.objects.count(), 2)
+        self.assertEqual(message.thread, self.thread)
+        self.assertEqual(message.message_op, self.user)
+        self.assertEqual(message.message_text, '0')
+
+        message = Message(thread=self.thread, message_op=self.user, message_text=-1)
+        message.save()
+        message = Message.objects.get(pk=message.pk)
+        self.assertEqual(Message.objects.count(), 3)
+        self.assertEqual(message.thread, self.thread)
+        self.assertEqual(message.message_op, self.user)
+        self.assertEqual(message.message_text, '-1')
