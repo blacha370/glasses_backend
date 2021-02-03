@@ -1,12 +1,11 @@
 from django.db import models
-from django.utils import timezone, dateformat
 from django.contrib.auth.models import User, Group
 
 
 class ActiveOrder(models.Model):
     owner = models.ForeignKey(Group, on_delete=models.CASCADE)
     order_number = models.CharField(max_length=14, unique=True, default=None)
-    pub_date = models.DateField(auto_now_add=True)
+    pub_date = models.DateField()
     order_statuses = [('1', 'Nowe'),
                       ('2', 'W przygotowaniu'),
                       ('3', 'Wysłane'),
@@ -22,44 +21,25 @@ class ActiveOrder(models.Model):
 
     def update_status(self, new_status=None):
         if new_status is None:
-            self.order_status = self.order_statuses[self.order_statuses.index(self.order_status) + 1]
             if self.order_status == ('4', 'Zakończone'):
-                self.complete_order()
                 return None
+            self.order_status = self.order_statuses[self.order_statuses.index(self.order_status) + 1]
             return True
         elif new_status in self.order_statuses:
+            if self.order_status == ('4', 'Zakończone'):
+                return None
             self.order_status = new_status
             self.save()
-            if self.order_status == ('4', 'Zakończone'):
-                self.complete_order()
-                return None
             return True
         return False
-
-    def complete_order(self):
-        unactive = UnactiveOrder(order_number=self.order_number, pub_date=self.pub_date, image=self.image,
-                                 owner=self.owner)
-        unactive.save()
-        self.delete()
 
 
 class OrderStatusChange(models.Model):
     order = models.ForeignKey(ActiveOrder, on_delete=models.CASCADE)
-    pub_date = models.DateField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)
     change_owner = models.ForeignKey(User, on_delete=models.CASCADE)
     previous_state = models.CharField(max_length=1, choices=ActiveOrder.order_statuses)
     new_state = models.CharField(max_length=1, choices=ActiveOrder.order_statuses)
-
-
-class UnactiveOrder(models.Model):
-    owner = models.ForeignKey(Group, on_delete=models.CASCADE)
-    order_number = models.CharField(max_length=14, unique=True, default=None)
-    pub_date = models.DateField()
-    unactivation_date = models.DateField(auto_now_add=True)
-    image = models.CharField(max_length=20, default='?')
-
-    def __str__(self):
-        return self.order_number
 
 
 class MessagesThread(models.Model):
