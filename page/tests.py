@@ -2508,3 +2508,8 @@ class NotificationTestCase(TestCase):
         self.assertIsNone(Notification.add_notification(1.1, self.thread))
 
         self.assertIsNone(Notification.add_notification(-1.1, self.thread))
+
+    def test_add_notification_with_bool_as_user(self):
+        self.assertIsNone(Notification.add_notification(True, self.thread))
+
+        self.assertIsNone(Notification.add_notification(False, self.thread))
