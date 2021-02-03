@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import *
@@ -66,14 +66,23 @@ def admin_orders(request, current_page):
 def admin_archive(request, current_page):
     if request.user.groups.filter(name='administracja'):
         page_len = 15
-        archive_order_list = get_orders_page(request.user, ActiveOrder, page_len, current_page)
-        orders_amount = ActiveOrder.objects.count()
+        orders_amount = ActiveOrder.objects.filter(order_status='4').count()
         prev_page = current_page - 1
         if orders_amount > current_page * page_len:
             next_page = current_page + 1
         else:
             next_page = 0
         notification = len(Notification.objects.filter(user=request.user))
+        try:
+            group = request.user.groups.exclude(name='administracja')[0]
+            if group.name == 'Pomoc techniczna':
+                archive_order_list = ActiveOrder.objects.filter(
+                    order_status='4')[(current_page - 1) * page_len:current_page * page_len]
+            else:
+                archive_order_list = ActiveOrder.objects.filter(order_status='4').filter(
+                    owner=group)[(current_page - 1) * page_len:current_page * page_len]
+        except IndexError:
+            archive_order_list = ActiveOrder.objects.none()
         return render(request, 'page/admin_archive.html', {'archive_order_list': archive_order_list,
                                                            'prev_page': prev_page, 'next_page': next_page,
                                                            'notification': notification})
@@ -120,8 +129,9 @@ def user_orders(request, current_page):
 @login_required(login_url='')
 def user_archive(request, current_page):
     page_len = 15
-    archive_order_list = get_orders_page(request.user, UnactiveOrder, page_len, current_page)
-    orders_amount = UnactiveOrder.objects.count()
+    archive_order_list = ActiveOrder.objects.filter(order_status='4'
+                                                    )[(current_page - 1) * page_len:current_page * page_len]
+    orders_amount = ActiveOrder.objects.filter(order_status='4').count()
     prev_page = current_page - 1
     if orders_amount > current_page * page_len:
         next_page = current_page + 1
@@ -204,9 +214,7 @@ def inbox(request):
         notifications.append(thread[0])
     message_threads = set()
     for group in request.user.groups.all():
-        for thread in MessagesThread.objects.filter(reciever=group).order_by('subject'):
-            message_threads.add(thread)
-        for thread in MessagesThread.objects.filter(creator=group).order_by('subject'):
+        for thread in MessagesThread.objects.filter(archive=False).filter(groups=group).order_by('subject'):
             message_threads.add(thread)
     if request.user.groups.filter(name='administracja'):
         return render(request, 'page/admin_inbox.html', {'message_threads': message_threads,
@@ -218,28 +226,31 @@ def inbox(request):
 
 @login_required(login_url='')
 def archive_inbox(request):
-    message_threads = ArchiveThread.objects.order_by('subject')
+    message_threads = set()
+    for group in request.user.groups.all():
+        for thread in MessagesThread.objects.filter(archive=True).filter(groups=group).order_by('subject'):
+            message_threads.add(thread)
     return render(request, 'page/archive_inbox.html', {'message_threads': message_threads})
 
 
 @login_required(login_url='')
 def archive_thread(request, message_topic, current_page):
+    print(message_topic)
     page_len = 10
-    current_notification = Notification.objects.filter(user=request.user,
-                                                       thread=message_topic)
-    if len(current_notification):
-        current_notification.delete()
-    messages_thread = ArchiveMessage.objects.filter(thread=message_topic)
-    messages_thread = messages_thread.order_by('pk').reverse()
+    current_notification = Notification.objects.filter(thread=message_topic)
+    for notification in current_notification:
+        notification.delete()
+    messages_thread = MessagesThread.objects.get(pk=message_topic)
+    msgs = Message.objects.filter(thread=messages_thread)
     prev_page = current_page - 1
-    if len(messages_thread) > current_page * page_len:
+    if msgs.count() > current_page * page_len:
         next_page = current_page + 1
     else:
         next_page = 0
-    if messages_thread:
-        messages_thread = messages_thread[(current_page - 1) * page_len:current_page * page_len]
+    if msgs:
+        msgs = msgs[(current_page - 1) * page_len:current_page * page_len]
         notification = len(Notification.objects.filter(user=request.user))
-        return render(request, 'page/archive_thread.html', {'messages_thread': messages_thread, 'prev_page': prev_page,
+        return render(request, 'page/archive_thread.html', {'messages_thread': msgs, 'prev_page': prev_page,
                                                             'next_page': next_page, 'notification': notification})
     else:
         return redirect(archive_inbox)
@@ -275,31 +286,27 @@ def add_message(request, thread_subject):
     if request.method == 'POST':
         form = AddMessageForm(request.POST)
         if form.is_valid():
-            try:
-                thread = MessagesThread.objects.get_or_create(subject=thread_subject, defaults={
-                    'creator': Group.objects.get(name='druk'),
-                    'reciever': ActiveOrder.objects.get(order_number=thread_subject).owner})
-            except ActiveOrder.DoesNotExist:
-                thread = MessagesThread.objects.get_or_create(subject=thread_subject)
-            thread[0].save()
-            message = Message(thread=thread[0], message_text=form.cleaned_data['message_text'],
-                              message_op=request.user.username,
-                              message_date=dateformat.format(timezone.now(), 'H:i d.m.y'))
+            group_name = 'druk'
+            groups = request.user.groups.exclude(name='administracja')
+            groups = groups.union(Group.objects.filter(name=group_name))
+            current = None
+            for thread in MessagesThread.objects.filter(subject=thread_subject):
+                if thread.groups.all() == groups:
+                    current = thread
+                    break
+            if current is None:
+                current = MessagesThread(subject=thread_subject)
+                current.save()
+                current.groups.add(*groups)
+            message = Message(thread=current, message_op=request.user,
+                              message_text=form.cleaned_data['message_text'])
             message.save()
             messages.info(request, 'Wysłano nową wiadomość')
-            group = list()
-            try:
-                group = ActiveOrder.objects.get(order_number=thread_subject).owner
-            except ActiveOrder.DoesNotExist:
-                group = group.objects.get(name='administracja')
-            finally:
-                users = User.objects.filter(groups__name=group)
-                workers = User.objects.filter(groups__name='druk')
-                users = users.union(workers)
-                for user in users:
-                    if user == request.user:
-                        continue
-                    notification = Notification.objects.get_or_create(user=user, thread=thread[0])
+            users = User.objects.filter(
+                groups__name=group_name)
+            for user in users:
+                if request.user != user:
+                    notification = Notification.objects.get_or_create(user=user, thread=current)
                     notification[0].save()
                 return redirect(request.META.get('HTTP_REFERER'))
 
@@ -316,41 +323,30 @@ def add_new_message(request):
     if request.method == 'POST':
         form = AddMessageExtForm(request.POST)
         if form.is_valid():
-            group_name = AddMessageExtForm.choices[int(form.cleaned_data['reciever'])-1][1]
-            try:
-                thread = MessagesThread.objects.get_or_create(subject=form.cleaned_data['message_subject'], defaults={
-                    'creator': request.user.groups.exclude(name='administracja')[0],
-                    'reciever': Group.objects.get(name=group_name)})
-            except IndexError:
-                thread = MessagesThread.objects.get_or_create(subject=form.cleaned_data['message_subject'], defaults={
-                    'creator': request.user.groups.get(name='administracja'),
-                    'reciever': Group.objects.get(name=group_name)})
-            finally:
-                thread = thread[0]
-                if not request.user.groups.filter(name=thread.creator) and \
-                        not request.user.groups.filter(name=thread.reciever):
-                    try:
-                        thread = MessagesThread(subject=form.cleaned_data['message_subject'] + '.1',
-                                                creator=request.user.groups.exclude(name='administracja')[0],
-                                                reciever=Group.objects.get(name=group_name))
-                    except IndexError:
-                        thread = MessagesThread(subject=form.cleaned_data + '.1',
-                                                creator=request.user.groups.get(name='administracja'),
-                                                reciever=Group.objects.get(name=group_name))
-                thread.save()
-                message = Message(thread=thread, message_text=form.cleaned_data['message_text'],
-                                  message_op=request.user.username,
-                                  message_date=dateformat.format(timezone.now(), 'H:i d.m.y'))
-                message.save()
-                messages.info(request, 'Wysłano nową wiadomość')
-                users = get_user_model()
-                users = users.objects.filter(
-                    groups__name=group_name)
-                for user in users:
-                    if request.user != user:
-                        notification = Notification.objects.get_or_create(user=user, thread=thread)
-                        notification[0].save()
+            group_name = AddMessageExtForm.choices[int(form.cleaned_data['reciever']) - 1][1]
+            groups = request.user.groups.exclude(name='administracja')
+            groups = groups.union(Group.objects.filter(name=group_name))
+            current = None
+            for thread in MessagesThread.objects.filter(subject=form.cleaned_data['message_subject']):
+                if thread.groups.all() == groups:
+                    current = thread
+                    break
+            if current is None:
+                current = MessagesThread(subject=form.cleaned_data['message_subject'])
+                current.save()
+                current.groups.add(*groups)
+            message = Message(thread=current, message_op=request.user,
+                              message_text=form.cleaned_data['message_text'])
+            message.save()
+            messages.info(request, 'Wysłano nową wiadomość')
+            users = User.objects.filter(
+                groups__name=group_name)
+            for user in users:
+                if request.user != user:
+                    notification = Notification.objects.get_or_create(user=user, thread=current)
+                    notification[0].save()
             return redirect(inbox)
+    return redirect(inbox)
 
 
 @login_required(login_url='')
