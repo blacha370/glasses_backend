@@ -2391,3 +2391,9 @@ class MessageTestCase(TestCase):
         self.assertEqual(message.thread, self.thread)
         self.assertEqual(message.message_op, self.user)
         self.assertEqual(message.message_text, 'False')
+
+    def test_create_with_none_as_message_text(self):
+        with atomic():
+            message = Message(thread=self.thread, message_op=self.user, message_text=None)
+            self.assertRaises(IntegrityError, message.save)
+        self.assertEqual(Message.objects.count(), 0)
