@@ -2253,3 +2253,16 @@ class MessageTestCase(TestCase):
             message = Message(thread=self.thread, message_op=None, message_text='Text')
             self.assertRaises(IntegrityError, message.save)
         self.assertEqual(Message.objects.count(), 0)
+
+    def test_create_with_structure_as_message_op(self):
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op=list(), message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op=dict(), message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op=tuple(), message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op=set(), message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
