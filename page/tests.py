@@ -2485,3 +2485,14 @@ class NotificationTestCase(TestCase):
         self.thread.groups.remove(self.group)
         self.assertIsNone(Notification.add_notification(self.user, self.thread))
         self.assertEqual(Notification.objects.count(), 0)
+
+    def test_add_notification_with_string_as_user(self):
+        self.assertIsNone(Notification.add_notification('', self.thread))
+
+        self.assertIsNone(Notification.add_notification(' ', self.thread))
+
+        self.assertIsNone(Notification.add_notification('\n ', self.thread))
+
+        self.assertIsNone(Notification.add_notification('User', self.thread))
+
+        self.assertIsNone(Notification.add_notification('1', self.thread))
