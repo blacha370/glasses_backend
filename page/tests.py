@@ -2455,3 +2455,21 @@ class MessageTestCase(TestCase):
         self.assertEqual(Message.objects.count(), 1)
         self.assertEqual(Message.objects.filter(archive=True).count(), 1)
         self.assertEqual(Message.objects.filter(archive=False).count(), 0)
+
+
+class NotificationTestCase(TestCase):
+    def setUp(self):
+        self.user = User(username='User')
+        self.user.save()
+        self.thread = MessagesThread(subject='Subject')
+        self.thread.save()
+        group = Group(name='group')
+        group.save()
+        self.user.groups.add(group)
+        self.thread.groups.add(group)
+
+    def test_add_notification(self):
+        notification = Notification.add_notification(self.user, self.thread)
+        self.assertIsInstatnce(notification, Notification)
+        self.assertEqual(notification.user, self.user)
+        self.assertEqual(notification.thread, self.thread)
