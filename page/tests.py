@@ -2525,3 +2525,6 @@ class NotificationTestCase(TestCase):
         self.assertIsNone(Notification.add_notification(tuple(), self.thread))
 
         self.assertIsNone(Notification.add_notification(set(), self.thread))
+
+    def test_add_notification_without_user(self):
+        self.assertRaises(TypeError, Notification.add_notification, thread=self.thread)
