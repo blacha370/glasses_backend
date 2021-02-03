@@ -2223,3 +2223,13 @@ class MessageTestCase(TestCase):
 
         self.assertRaises(ValueError, Message, thread=self.thread, message_op='1', message_text='Text')
         self.assertEqual(Message.objects.count(), 0)
+
+    def test_create_with_int_as_message_op(self):
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op=1, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op=0, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op=-1, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
