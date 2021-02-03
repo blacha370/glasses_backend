@@ -2480,3 +2480,8 @@ class NotificationTestCase(TestCase):
         self.assertEqual(notification.user, self.user)
         self.assertEqual(notification.thread, self.thread)
         self.assertEqual(Notification.objects.count(), 1)
+
+    def test_add_notification_when_user_not_in_thread_groups(self):
+        self.thread.groups.remove(self.group)
+        self.assertIsNone(Notification.add_notification(self.user, self.thread))
+        self.assertEqual(Notification.objects.count(), 0)
