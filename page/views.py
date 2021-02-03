@@ -39,12 +39,12 @@ def logout_user(request):
 def admin_orders(request, current_page):
     if request.user.groups.filter(name='administracja'):
         page_len = 15
-        active_order_list = get_orders_page(request.user, ActiveOrder, page_len, current_page)
+        active_order_list = get_orders_page(request.user, page_len, current_page)
         owner = request.user.groups.exclude(name='administracja')[0]
         if not owner.name == 'Pomoc techniczna':
-            orders_amount = ActiveOrder.objects.filter(owner=owner).count()
+            orders_amount = ActiveOrder.objects.exclude(order_status='4').filter(owner=owner).count()
         else:
-            orders_amount = ActiveOrder.objects.all().count()
+            orders_amount = ActiveOrder.objects.exclude(order_status='4').all().count()
         prev_page = current_page - 1
         if orders_amount > current_page * page_len:
             next_page = current_page + 1
@@ -66,8 +66,8 @@ def admin_orders(request, current_page):
 def admin_archive(request, current_page):
     if request.user.groups.filter(name='administracja'):
         page_len = 15
-        archive_order_list = get_orders_page(request.user, UnactiveOrder, page_len, current_page)
-        orders_amount = UnactiveOrder.objects.count()
+        archive_order_list = get_orders_page(request.user, ActiveOrder, page_len, current_page)
+        orders_amount = ActiveOrder.objects.count()
         prev_page = current_page - 1
         if orders_amount > current_page * page_len:
             next_page = current_page + 1
@@ -102,23 +102,16 @@ def add_order(request):
 @login_required(login_url='')
 def user_orders(request, current_page):
     page_len = 15
-    orders_amount = ActiveOrder.objects.count()
+    orders_amount = ActiveOrder.objects.exclude(order_status='4').exclude(order_status='5').count()
     prev_page = current_page - 1
     if orders_amount > current_page * page_len:
         next_page = current_page + 1
     else:
         next_page = 0
-    availible_statuses = list()
-    first = True
-    for status in ActiveOrder.order_statuses:
-        if first:
-            first = False
-            continue
-        else:
-            availible_statuses.append((str(int(status[0])-1), status[1]))
+    availible_statuses = [(str(int(status[0])-1), status[1]) for status in ActiveOrder.order_statuses]
     form = StatusForm(request.POST)
     notification = len(Notification.objects.filter(user=request.user))
-    active_order_list = get_orders_page(request.user, ActiveOrder, page_len, current_page)
+    active_order_list = get_orders_page(request.user, page_len, current_page)
     return render(request, 'page/user_orders.html', {'active_order_list': active_order_list, 'form': form,
                                                      'availible_statuses': availible_statuses, 'next_page': next_page,
                                                      'prev_page': prev_page, 'notification': notification})
@@ -143,25 +136,25 @@ def user_archive(request, current_page):
 @login_required(login_url='')
 def change(request, order_id):
     order = get_object_or_404(ActiveOrder, pk=order_id)
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.groups.filter(name='administracja'):
         form = StatusForm(request.POST)
         if form.is_valid():
             if not order.order_status == form.cleaned_data['value']:
-                status = OrderStatusChange(order=order, change_owner=request.user.username,
-                                           previous_state=order.order_status, new_state=form.cleaned_data['value'],
-                                           date=dateformat.format(timezone.now(), 'H:i d.m.y'))
+                status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
+                                           new_state=ActiveOrder.order_statuses[int(form.cleaned_data['value']) - 1][1])
+                print(form.cleaned_data['value'])
                 order.update_status(form.cleaned_data['value'])
                 status.save()
         return redirect(request.META.get('HTTP_REFERER'))
     elif request.user.groups.filter(name='druk') or request.user.groups.filter(name='administracja'):
         if order.order_status == '1':
-            status = OrderStatusChange(order=order, change_owner=request.user.username,
-                                       previous_state=order.order_status,
-                                       new_state=order.order_statuses[int(order.order_status)][0],
-                                       date=dateformat.format(timezone.now(), 'H:i d.m.y'))
+            status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
+                                       new_state=order.order_statuses[int(order.order_status)][0])
             order.order_status = order.order_statuses[int(order.order_status)][0]
             status.save()
             order.save()
+            return redirect(user_orders, current_page=1)
+        elif order.order_status == '3':
             return redirect(user_orders, current_page=1)
         else:
             new_state = order.order_statuses[int(order.order_status)][0]
@@ -174,11 +167,9 @@ def change(request, order_id):
 def change_confirmation(request, order_id, order_status):
     order = get_object_or_404(ActiveOrder, pk=order_id)
     if order.order_status == order_status:
-        status = OrderStatusChange(order=order, change_owner=request.user.username,
-                                   previous_state=order.order_status,
-                                   new_state=order.order_statuses[int(order.order_status)][0],
-                                   date=dateformat.format(timezone.now(), 'H:i d.m.y'))
-        order.order_status = order.order_statuses[int(order.order_status)][0]
+        status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
+                                   new_state=order.order_statuses[int(order.order_status)][0])
+        order.update_status()
         status.save()
         order.save()
     return redirect(user_orders, current_page=1)
