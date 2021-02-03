@@ -2604,6 +2604,10 @@ class NotificationTestCase(TestCase):
         self.assertIsNone(Notification.add_notification(self.user, set()))
         self.assertEqual(Notification.objects.count(), 0)
 
+    def test_add_notification_without_thread(self):
+        self.assertRaises(TypeError, Notification.add_notification, user=self.user)
+        self.assertEqual(Notification.objects.count(), 0)
+
     def test_str_method(self):
         notification = Notification.add_notification(self.user, self.thread)
         self.assertIsInstance(notification, Notification)
