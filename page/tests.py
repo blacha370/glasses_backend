@@ -2161,3 +2161,19 @@ class MessageTestCase(TestCase):
         self.assertEqual(message.thread, self.thread)
         self.assertEqual(message.message_op, self.user)
         self.assertEqual(message.message_text, 'Text')
+
+    def test_create_with_string_as_thread(self):
+        self.assertRaises(ValueError, Message, thread='', message_op=self.user, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=' ', message_op=self.user, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread='\n ', message_op=self.user, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread='Subject', message_op=self.user, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread='1', message_op=self.user, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
