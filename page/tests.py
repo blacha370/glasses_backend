@@ -2187,3 +2187,10 @@ class MessageTestCase(TestCase):
 
         self.assertRaises(ValueError, Message, thread=-1, message_op=self.user, message_text='Text')
         self.assertEqual(Message.objects.count(), 0)
+
+    def test_create_with_float_as_thread(self):
+        self.assertRaises(ValueError, Message, thread=1.1, message_op=self.user, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=-1.1, message_op=self.user, message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
