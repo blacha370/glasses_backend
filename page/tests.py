@@ -2141,3 +2141,23 @@ class MessageThreadTestCase(TestCase):
         self.assertEqual(MessagesThread.objects.count(), 0)
         archive_thread = ArchiveThread.objects.all()[0]
         self.assertEqual(archive_thread.subject, 'Subject')
+
+
+class MessageTestCase(TestCase):
+    def setUp(self):
+        self.user = User(username='User')
+        self.user.save()
+        self.thread = MessagesThread(subject='Subject')
+        self.thread.save()
+        group = Group(name='group')
+        group.save()
+        self.user.groups.add(group)
+        self.thread.groups.add(group)
+
+    def test_create(self):
+        message = Message(thread=self.thread, message_op=self.user, message_text='Text')
+        message.save()
+        self.assertEqual(Message.objects.count(), 1)
+        self.assertEqual(message.thread, self.thread)
+        self.assertEqual(message.message_op, self.user)
+        self.assertEqual(message.message_text, 'Text')
