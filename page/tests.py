@@ -2503,3 +2503,8 @@ class NotificationTestCase(TestCase):
         self.assertIsNone(Notification.add_notification(0, self.thread))
 
         self.assertIsNone(Notification.add_notification(-1, self.thread))
+
+    def test_add_notification_with_float_as_user(self):
+        self.assertIsNone(Notification.add_notification(1.1, self.thread))
+
+        self.assertIsNone(Notification.add_notification(-1.1, self.thread))
