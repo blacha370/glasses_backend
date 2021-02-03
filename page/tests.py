@@ -2207,3 +2207,19 @@ class MessageTestCase(TestCase):
             message = Message(thread=None, message_op=self.user, message_text='Text')
             self.assertRaises(IntegrityError, message.save)
         self.assertEqual(Message.objects.count(), 0)
+
+    def test_create_with_string_as_message_op(self):
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op='', message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op=' ', message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op='\n ', message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op='User', message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
+
+        self.assertRaises(ValueError, Message, thread=self.thread, message_op='1', message_text='Text')
+        self.assertEqual(Message.objects.count(), 0)
