@@ -102,12 +102,14 @@ class Notification(models.Model):
 
     @classmethod
     def add_notification(cls, user: User, thread: MessagesThread):
-        if user.groups.all().intersection(thread.groups.all()):
+        if not isinstance(user, User) or not isinstance(thread, MessagesThread):
+            pass
+        elif user.groups.all().intersection(thread.groups.all()):
             try:
                 notification = Notification.objects.get(user=user, thread=thread)
                 return notification
             except Notification.DoesNotExist:
                 notification = Notification(user=user, thread=thread)
+                notification.save()
                 return notification
-        else:
-            return None
+        return None
