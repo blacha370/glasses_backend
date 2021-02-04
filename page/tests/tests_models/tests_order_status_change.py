@@ -1,8 +1,9 @@
 from django.test import TestCase
 from django.db.utils import IntegrityError
 from django.db.transaction import atomic
+from django.contrib.auth.models import Group, User
 import datetime
-from ...models import *
+from ...models import OrderStatusChange, ActiveOrder
 
 
 class OrderStatusChangeTestCase(TestCase):

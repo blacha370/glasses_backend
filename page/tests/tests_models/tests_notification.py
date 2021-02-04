@@ -1,5 +1,6 @@
 from django.test import TestCase
-from ...models import *
+from django.contrib.auth.models import User, Group
+from ...models import Notification, MessagesThread
 
 
 class NotificationTestCase(TestCase):

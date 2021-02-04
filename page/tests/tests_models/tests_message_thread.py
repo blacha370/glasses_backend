@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.db.utils import IntegrityError
 from django.db.transaction import atomic
-from ...models import *
+from django.contrib.auth.models import Group, User
+from ...models import MessagesThread, Message
 
 
 class MessageThreadTestCase(TestCase):
