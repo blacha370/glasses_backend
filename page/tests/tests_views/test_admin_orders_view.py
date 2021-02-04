@@ -1,5 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User, Group, AnonymousUser
+from ...models import ActiveOrder
+from datetime import date
 
 
 class AdminOrdersTestCase(TestCase):
@@ -181,3 +183,19 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.redirect_chain[0][1], 302)
         self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
         self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 0)
+
+        for i in range(40):
+            order = ActiveOrder(owner=self.groups['4dich'], order_number=i, image=i, divided='całe', tracking_number=i,
+                                pub_date=date.today())
+            order.save()
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/2/a/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/2/a/')
+        self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 15)
+        self.assertEqual(response.context[0]['prev_page'], 1)
+        self.assertEqual(response.context[0]['next_page'], 3)
