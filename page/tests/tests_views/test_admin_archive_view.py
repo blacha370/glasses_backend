@@ -106,3 +106,17 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.redirect_chain[1][1], 302)
         self.assertEqual(response.request['PATH_INFO'], '/')
         self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
+
+    def test_admin_orders_with_authentication_as_user_with_administracja_group(self):
+        self.user.groups.add(self.groups['administracja'])
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/archive/1/a/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 2)
+        self.assertEqual(response.redirect_chain[0][0], '/o/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[1][0], '/')
+        self.assertEqual(response.redirect_chain[1][1], 302)
+        self.assertEqual(response.request['PATH_INFO'], '/')
+        self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
