@@ -9,7 +9,12 @@ from .functions import iterate_order_add, get_orders_page
 
 def index(request):
     if request.user.is_authenticated:
-        return redirect(admin_orders, current_page=1)
+        if request.user.groups.filter(name='administracja').exists():
+            return redirect(admin_orders, current_page=1)
+        elif request.user.groups.filter(name='druk').exists():
+            return redirect(user_orders, current_page=1)
+        else:
+            return redirect(logout_user)
     form = LoginForm(request.POST)
     return render(request, 'page/index.html', {'form': form})
 
