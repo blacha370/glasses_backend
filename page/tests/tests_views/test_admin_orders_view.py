@@ -169,3 +169,15 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(len(response.redirect_chain), 0)
         self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
         self.assertIsInstance(response.wsgi_request.user, User)
+
+    def test_admin_orders_with_2_as_current_page(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/2/a/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/a/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
+        self.assertIsInstance(response.wsgi_request.user, User)
