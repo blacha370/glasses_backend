@@ -9,7 +9,12 @@ from .functions import iterate_order_add, get_orders_page
 
 def index(request):
     if request.user.is_authenticated:
-        return redirect(admin_orders, current_page=1)
+        if request.user.groups.filter(name='administracja').exists():
+            return redirect(admin_orders, current_page=1)
+        elif request.user.groups.filter(name='druk').exists():
+            return redirect(user_orders, current_page=1)
+        else:
+            return redirect(logout_user)
     form = LoginForm(request.POST)
     return render(request, 'page/index.html', {'form': form})
 
@@ -19,7 +24,7 @@ def login_user(request):
         form = LoginForm(request.POST)
         if form.is_valid():
             user = authenticate(request, username=form.cleaned_data['login'], password=form.cleaned_data['password'])
-            if user:
+            if user is not None:
                 login(request, user)
                 if user.groups.filter(name='administracja').exists():
                     return redirect(admin_orders, current_page=1)
@@ -40,7 +45,12 @@ def admin_orders(request, current_page):
     if request.user.groups.filter(name='administracja'):
         page_len = 15
         active_order_list = get_orders_page(request.user, page_len, current_page)
-        owner = request.user.groups.exclude(name='administracja')[0]
+        if active_order_list.count() == 0 and current_page > 1:
+            return redirect(admin_orders, current_page=1)
+        try:
+            owner = request.user.groups.exclude(name='administracja')[0]
+        except IndexError:
+            return redirect(logout_user)
         if not owner.name == 'Pomoc techniczna':
             orders_amount = ActiveOrder.objects.exclude(order_status='4').filter(owner=owner).count()
         else:
@@ -66,28 +76,30 @@ def admin_orders(request, current_page):
 def admin_archive(request, current_page):
     if request.user.groups.filter(name='administracja'):
         page_len = 15
-        orders_amount = ActiveOrder.objects.filter(order_status='4').count()
+        notification = len(Notification.objects.filter(user=request.user))
+        try:
+            owner = request.user.groups.exclude(name='administracja')[0]
+        except IndexError:
+            return redirect(logout_user)
+        if not owner.name == 'Pomoc techniczna':
+            archive_order_list = ActiveOrder.objects.filter(order_status='4').filter(owner=owner)
+        else:
+            archive_order_list = ActiveOrder.objects.filter(order_status='4').all()
+        if archive_order_list.count() == 0 and current_page > 1:
+            return redirect(admin_archive, current_page=1)
         prev_page = current_page - 1
-        if orders_amount > current_page * page_len:
+        if archive_order_list.count() > current_page * page_len:
             next_page = current_page + 1
         else:
             next_page = 0
-        notification = len(Notification.objects.filter(user=request.user))
-        try:
-            group = request.user.groups.exclude(name='administracja')[0]
-            if group.name == 'Pomoc techniczna':
-                archive_order_list = ActiveOrder.objects.filter(
-                    order_status='4')[(current_page - 1) * page_len:current_page * page_len]
-            else:
-                archive_order_list = ActiveOrder.objects.filter(order_status='4').filter(
-                    owner=group)[(current_page - 1) * page_len:current_page * page_len]
-        except IndexError:
-            archive_order_list = ActiveOrder.objects.none()
+        archive_order_list = archive_order_list[(current_page - 1) * page_len:current_page * page_len]
         return render(request, 'page/admin_archive.html', {'archive_order_list': archive_order_list,
                                                            'prev_page': prev_page, 'next_page': next_page,
                                                            'notification': notification})
     elif request.user.groups.filter(name='druk'):
         return redirect(user_archive, current_page=1)
+    else:
+        return redirect(logout_user)
 
 
 @login_required(login_url='')
