@@ -167,3 +167,15 @@ class IndexTestCase(TestCase):
         self.assertEqual(response.redirect_chain[1][1], 302)
         self.assertEqual(response.request['PATH_INFO'], '/')
         self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
+
+    def test_index_with_authenticate_as_administracja_and_druk_groups(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['druk'])
+        self.client.force_login(self.user)
+        response = self.client.get('/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/a/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
+        self.assertIsInstance(response.wsgi_request.user, User)
