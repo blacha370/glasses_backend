@@ -130,7 +130,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertIsInstance(response.wsgi_request.user, User)
         self.user.groups.remove(self.groups['4dich'])
 
-        self.user.groups.add(self.groups['administracja'], self.groups['besart'])
+        self.user.groups.add(self.groups['besart'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/1/a/', follow=True)
         self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
@@ -140,7 +140,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertIsInstance(response.wsgi_request.user, User)
         self.user.groups.remove(self.groups['besart'])
 
-        self.user.groups.add(self.groups['administracja'], self.groups['kasia'])
+        self.user.groups.add(self.groups['kasia'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/1/a/', follow=True)
         self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
@@ -150,7 +150,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertIsInstance(response.wsgi_request.user, User)
         self.user.groups.remove(self.groups['kasia'])
 
-        self.user.groups.add(self.groups['administracja'], self.groups['Pomoc techniczna'])
+        self.user.groups.add(self.groups['Pomoc techniczna'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/1/a/', follow=True)
         self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
@@ -159,3 +159,13 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
         self.assertIsInstance(response.wsgi_request.user, User)
         self.user.groups.remove(self.groups['Pomoc techniczna'])
+
+    def test_admin_orders_with_administracja_and_druk_group(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['druk'])
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/1/a/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
+        self.assertIsInstance(response.wsgi_request.user, User)
