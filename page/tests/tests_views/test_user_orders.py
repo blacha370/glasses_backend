@@ -373,3 +373,14 @@ class UserOrdersTestCase(TestCase):
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertEqual(response.redirect_chain[0][0], '/?next=/orders/1/u/')
         self.assertEqual(response.redirect_chain[0][1], 302)
+
+    def test_user_orders_delete_method_with_authentication(self):
+        self.client.force_login(self.user)
+        response = self.client.delete('/orders/1/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 2)
+        self.assertEqual(response.redirect_chain[0][0], '/o/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[1][0], '/')
+        self.assertEqual(response.redirect_chain[1][1], 302)
