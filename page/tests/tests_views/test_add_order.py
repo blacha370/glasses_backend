@@ -40,4 +40,16 @@ class AddOrderTestCase(TestCase):
             self.assertEqual(response.redirect_chain[0][0], '/?next=/add/order/')
             self.assertEqual(response.redirect_chain[0][1], 302)
             self.assertEqual(ActiveOrder.objects.count(), 0)
-            
+
+    def test_upload_file_as_druk_group(self):
+        self.user.groups.add(self.groups['druk'])
+        with open('data_for_tests.csv') as file:
+            self.client.force_login(self.user)
+            response = self.client.post('/add/order/', {'name': 'fred', 'file': file}, follow=True)
+            self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+            self.assertEqual(response.templates[1].name, 'page/base.html')
+            self.assertEqual(len(response.redirect_chain), 1)
+            self.assertEqual(response.redirect_chain[0][0], '/orders/1/u/')
+            self.assertEqual(response.redirect_chain[0][1], 302)
+            self.assertEqual(ActiveOrder.objects.count(), 0)
+            self.assertEqual(len(response.context[0]['active_order_list']), 0)
