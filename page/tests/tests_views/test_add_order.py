@@ -213,3 +213,11 @@ class AddOrderTestCase(TestCase):
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertEqual(response.redirect_chain[0][0], '/orders/1/a/')
         self.assertEqual(response.redirect_chain[0][1], 302)
+
+    def test_upload_file_delete_method_without_authentication(self):
+        response = self.client.delete('/add/order/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/?next=/add/order/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
