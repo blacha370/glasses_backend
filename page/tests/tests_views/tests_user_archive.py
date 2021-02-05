@@ -159,3 +159,13 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/orders/archive/1/u/')
         self.assertIsInstance(response.wsgi_request.user, User)
         self.user.groups.remove(self.groups['Pomoc techniczna'])
+
+    def test_user_archive_with_administracja_and_druk_group(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['druk'])
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/archive/1/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_archive.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/archive/1/u/')
+        self.assertIsInstance(response.wsgi_request.user, User)
