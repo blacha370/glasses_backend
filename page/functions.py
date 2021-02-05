@@ -25,7 +25,7 @@ def iterate_order_add(f, request):
                 if owner:
                     create_order(line, request, owner)
                 else:
-                    info.append('nieprawidłowy numer zamówienia: ' + line[1])
+                    info.append('[{0}] '.format(i) + 'nieprawidłowy numer zamówienia: ' + line[1])
         elif ',' in line:
             line = line.split(',')
             if not line[1] in all_orders:
@@ -33,7 +33,7 @@ def iterate_order_add(f, request):
                 if owner:
                     create_order(line, request, owner)
                 else:
-                    info.append('nieprawidłowy numer zamówienia: ' + line[1])
+                    info.append('[{0}] '.format(i) + 'nieprawidłowy numer zamówienia: ' + line[1])
         else:
             info.append('błąd z linią: ' + str(i))
         i += 1
@@ -111,3 +111,12 @@ def create_order(line, request, owner):
                                previous_state='1', new_state='1')
     order.save()
     status.save()
+
+
+def get_page(queryset, current_page, page_len):
+    prev_page = current_page - 1
+    if queryset.count() > current_page * page_len:
+        next_page = current_page + 1
+    else:
+        next_page = 0
+    return prev_page, next_page

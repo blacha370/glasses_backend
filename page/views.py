@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import *
 from .forms import StatusForm, LoginForm, AddOrderForm, AddMessageForm, AddMessageExtForm
-from .functions import iterate_order_add, get_orders_page
+from .functions import iterate_order_add, get_orders_page, get_page
 
 
 def index(request):
@@ -45,24 +45,21 @@ def admin_orders(request, current_page):
     if request.user.groups.filter(name='administracja'):
         page_len = 15
         active_order_list = get_orders_page(request.user, page_len, current_page)
-        if active_order_list.count() == 0 and current_page > 1:
-            return redirect(admin_orders, current_page=1)
         try:
             owner = request.user.groups.exclude(name='administracja')[0]
         except IndexError:
             return redirect(logout_user)
         if not owner.name == 'Pomoc techniczna':
-            orders_amount = ActiveOrder.objects.exclude(order_status='4').filter(owner=owner).count()
+            active_order_list = ActiveOrder.objects.exclude(order_status='4').filter(owner=owner)
         else:
-            orders_amount = ActiveOrder.objects.exclude(order_status='4').all().count()
-        prev_page = current_page - 1
-        if orders_amount > current_page * page_len:
-            next_page = current_page + 1
-        else:
-            next_page = 0
+            active_order_list = ActiveOrder.objects.exclude(order_status='4').all()
+        prev_page, next_page = get_page(active_order_list, current_page, page_len)
         form = StatusForm(request.POST)
         add_order_form = AddOrderForm(request.POST)
         notification = len(Notification.objects.filter(user=request.user))
+        active_order_list = active_order_list[(current_page - 1) * page_len:current_page * page_len]
+        if active_order_list.count() == 0 and current_page != 1:
+            return redirect(admin_orders, 1)
         return render(request, 'page/admin_orders.html', {'active_order_list': active_order_list, 'form': form,
                                                           'add_order_form': add_order_form, 'next_page': next_page,
                                                           'prev_page': prev_page, 'notification': notification})
@@ -87,11 +84,7 @@ def admin_archive(request, current_page):
             archive_order_list = ActiveOrder.objects.filter(order_status='4').all()
         if archive_order_list.count() == 0 and current_page > 1:
             return redirect(admin_archive, current_page=1)
-        prev_page = current_page - 1
-        if archive_order_list.count() > current_page * page_len:
-            next_page = current_page + 1
-        else:
-            next_page = 0
+        prev_page, next_page = get_page(archive_order_list, current_page, page_len)
         archive_order_list = archive_order_list[(current_page - 1) * page_len:current_page * page_len]
         return render(request, 'page/admin_archive.html', {'archive_order_list': archive_order_list,
                                                            'prev_page': prev_page, 'next_page': next_page,
@@ -123,20 +116,16 @@ def add_order(request):
 def user_orders(request, current_page):
     if request.user.groups.filter(name='administracja') or request.user.groups.filter(name='druk'):
         page_len = 15
-        orders = ActiveOrder.objects.exclude(order_status='4').exclude(order_status='5')
+        active_order_list = ActiveOrder.objects.exclude(order_status='4').exclude(order_status='5')
         if request.user.groups.filter(name='administracja') and not request.user.groups.filter(name='Pomoc techniczna'):
             try:
                 owner = request.user.groups.exclude(name='administracja')[0]
-                orders = orders.filter(owner=owner)
+                active_order_list = active_order_list.filter(owner=owner)
             except IndexError:
                 return redirect(logout_user)
-        prev_page = current_page - 1
-        if orders.count() == 0 and current_page > 1:
-            return redirect(user_orders, current_page=1)
-        if orders.count() > current_page * page_len:
-            next_page = current_page + 1
-        else:
-            next_page = 0
+        if active_order_list.count() == 0 and current_page != 1:
+            return redirect(user_orders, 1)
+        prev_page, next_page = get_page(active_order_list, current_page, page_len)
         availible_statuses = [(str(int(status[0])-1), status[1]) for status in ActiveOrder.order_statuses]
         form = StatusForm(request.POST)
         notification = len(Notification.objects.filter(user=request.user))
@@ -152,18 +141,35 @@ def user_orders(request, current_page):
 @login_required(login_url='')
 def user_archive(request, current_page):
     page_len = 15
-    archive_order_list = ActiveOrder.objects.filter(order_status='4'
-                                                    )[(current_page - 1) * page_len:current_page * page_len]
-    orders_amount = ActiveOrder.objects.filter(order_status='4').count()
-    prev_page = current_page - 1
-    if orders_amount > current_page * page_len:
-        next_page = current_page + 1
-    else:
-        next_page = 0
     notification = len(Notification.objects.filter(user=request.user))
-    return render(request, 'page/user_archive.html', {'archive_order_list': archive_order_list,
-                                                      'prev_page': prev_page, 'next_page': next_page,
-                                                      'notification': notification})
+    if request.user.groups.filter(name='druk') or request.user.groups.filter(name='administracja'):
+        if request.user.groups.filter(name='druk'):
+            archive_order_list = ActiveOrder.objects.filter(order_status='4')
+            prev_page, next_page = get_page(archive_order_list, current_page, page_len)
+            archive_order_list = archive_order_list[(current_page - 1) * page_len:current_page * page_len]
+            if archive_order_list.count() == 0 and current_page > 1:
+                return redirect(user_archive, current_page=1)
+            return render(request, 'page/user_archive.html', {'archive_order_list': archive_order_list,
+                                                              'prev_page': prev_page, 'next_page': next_page,
+                                                              'notification': notification})
+        else:
+            try:
+                owner = request.user.groups.exclude(name='administracja')[0]
+            except IndexError:
+                return redirect(logout_user)
+            if not owner.name == 'Pomoc techniczna':
+                archive_order_list = ActiveOrder.objects.filter(order_status='4').filter(owner=owner)
+            else:
+                archive_order_list = ActiveOrder.objects.filter(order_status='4')
+            prev_page, next_page = get_page(archive_order_list, current_page, page_len)
+            archive_order_list = archive_order_list[(current_page - 1) * page_len:current_page * page_len]
+            if archive_order_list.count() == 0 and current_page > 1:
+                return redirect(user_archive, current_page=1)
+            return render(request, 'page/user_archive.html', {'archive_order_list': archive_order_list,
+                                                              'prev_page': prev_page, 'next_page': next_page,
+                                                              'notification': notification})
+    else:
+        return redirect(logout_user)
 
 
 @login_required(login_url='')
@@ -175,7 +181,6 @@ def change(request, order_id):
             if not order.order_status == form.cleaned_data['value']:
                 status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
                                            new_state=ActiveOrder.order_statuses[int(form.cleaned_data['value']) - 1][1])
-                print(form.cleaned_data['value'])
                 order.update_status(form.cleaned_data['value'])
                 status.save()
         return redirect(request.META.get('HTTP_REFERER'))
@@ -258,7 +263,6 @@ def archive_inbox(request):
 
 @login_required(login_url='')
 def archive_thread(request, message_topic, current_page):
-    print(message_topic)
     page_len = 10
     current_notification = Notification.objects.filter(thread=message_topic)
     for notification in current_notification:
