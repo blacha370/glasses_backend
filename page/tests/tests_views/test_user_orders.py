@@ -1,5 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User, Group, AnonymousUser
+from ...models import ActiveOrder
+from datetime import date
 
 
 class UserOrdersTestCase(TestCase):
@@ -24,7 +26,7 @@ class UserOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/')
         self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
 
-    def test_admin_orders_with_authentication_as_user_without_groups(self):
+    def test_user_orders_with_authentication_as_user_without_groups(self):
         self.client.force_login(self.user)
         response = self.client.get('/orders/1/u/', follow=True)
         self.assertEqual(response.templates[0].name, 'page/index.html')
@@ -37,7 +39,7 @@ class UserOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/')
         self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
 
-    def test_admin_orders_with_authentication_as_user_with_wrong_group(self):
+    def test_user_orders_with_authentication_as_user_with_wrong_group(self):
         self.user.groups.add(self.groups['4dich'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/1/u/', follow=True)
@@ -93,7 +95,7 @@ class UserOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/')
         self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
 
-    def test_admin_orders_with_proper_authentication(self):
+    def test_user_orders_with_proper_authentication(self):
         self.user.groups.add(self.groups['druk'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/1/u/', follow=True)
@@ -143,3 +145,105 @@ class UserOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/orders/1/u/')
         self.assertIsInstance(response.wsgi_request.user, User)
         self.user.groups.remove(self.groups['Pomoc techniczna'])
+
+    def test_user_orders_with_2_as_current_page(self):
+        self.user.groups.add(self.groups['druk'])
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/2/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/u/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/u/')
+        self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 0)
+
+        for i in range(40):
+            order = ActiveOrder(owner=self.groups['4dich'], order_number=i, image=i, divided='całe', tracking_number=i,
+                                pub_date=date.today())
+            order.save()
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/2/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/2/u/')
+        self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 15)
+        self.assertEqual(response.context[0]['prev_page'], 1)
+        self.assertEqual(response.context[0]['next_page'], 3)
+
+        self.user.groups.remove(self.groups['druk'])
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/1/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/u/')
+        self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 15)
+        self.assertEqual(response.context[0]['prev_page'], 0)
+        self.assertEqual(response.context[0]['next_page'], 2)
+
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/2/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/2/u/')
+        self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 15)
+        self.assertEqual(response.context[0]['prev_page'], 1)
+        self.assertEqual(response.context[0]['next_page'], 3)
+
+        self.user.groups.remove(self.groups['4dich'])
+        self.user.groups.add(self.groups['Pomoc techniczna'])
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/1/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/u/')
+        self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 15)
+        self.assertEqual(response.context[0]['prev_page'], 0)
+        self.assertEqual(response.context[0]['next_page'], 2)
+
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/2/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/2/u/')
+        self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 15)
+        self.assertEqual(response.context[0]['prev_page'], 1)
+        self.assertEqual(response.context[0]['next_page'], 3)
+
+        self.user.groups.remove(self.groups['Pomoc techniczna'])
+        self.user.groups.add(self.groups['kasia'])
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/1/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/u/')
+        self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 0)
+        self.assertEqual(response.context[0]['prev_page'], 0)
+        self.assertEqual(response.context[0]['next_page'], 0)
+
+        self.user.groups.remove(self.groups['kasia'])
+        self.user.groups.add(self.groups['besart'])
+        self.client.force_login(self.user)
+        response = self.client.get('/orders/1/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/u/')
+        self.assertIsInstance(response.wsgi_request.user, User)
+        self.assertEqual(response.context[0]['active_order_list'].count(), 0)
+        self.assertEqual(response.context[0]['prev_page'], 0)
+        self.assertEqual(response.context[0]['next_page'], 0)
