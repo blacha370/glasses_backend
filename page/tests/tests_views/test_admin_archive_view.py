@@ -158,7 +158,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'page/admin_archive.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
         self.assertEqual(len(response.redirect_chain), 0)
-        self.assertEqual(response.request['PATH_INFO'],'/orders/archive/1/a/')
+        self.assertEqual(response.request['PATH_INFO'], '/orders/archive/1/a/')
         self.assertIsInstance(response.wsgi_request.user, User)
         self.user.groups.remove(self.groups['Pomoc techniczna'])
 
