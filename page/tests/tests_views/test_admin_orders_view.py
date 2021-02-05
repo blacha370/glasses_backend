@@ -310,3 +310,11 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
         self.assertEqual(len(response.redirect_chain), 0)
+
+    def test_admin_orders_put_method_without_authentication(self):
+        response = self.client.put('/orders/1/a/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/?next=/orders/1/a/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
