@@ -268,3 +268,13 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.redirect_chain[0][1], 302)
         self.assertEqual(response.redirect_chain[1][0], '/')
         self.assertEqual(response.redirect_chain[1][1], 302)
+
+    def test_admin_orders_post_method_with_authentication_as_druk_group(self):
+        self.user.groups.add(self.groups['druk'])
+        self.client.force_login(self.user)
+        response = self.client.post('/orders/1/a/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/u/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
