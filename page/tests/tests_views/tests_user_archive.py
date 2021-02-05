@@ -387,3 +387,11 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'page/user_archive.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
         self.assertEqual(len(response.redirect_chain), 0)
+
+    def test_user_archive_delete_method_without_authentication(self):
+        response = self.client.delete('/orders/archive/1/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/?next=/orders/archive/1/u/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
