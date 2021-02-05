@@ -329,3 +329,14 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertEqual(response.redirect_chain[0][0], '/?next=/orders/archive/1/a/')
         self.assertEqual(response.redirect_chain[0][1], 302)
+
+    def test_admin_archive_put_method_with_authentication(self):
+        self.client.force_login(self.user)
+        response = self.client.put('/orders/archive/1/a/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 2)
+        self.assertEqual(response.redirect_chain[0][0], '/o/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[1][0], '/')
+        self.assertEqual(response.redirect_chain[1][1], 302)
