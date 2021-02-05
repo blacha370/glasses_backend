@@ -247,3 +247,11 @@ class UserOrdersTestCase(TestCase):
         self.assertEqual(response.context[0]['active_order_list'].count(), 0)
         self.assertEqual(response.context[0]['prev_page'], 0)
         self.assertEqual(response.context[0]['next_page'], 0)
+
+    def test_user_orders_post_method_without_authentication(self):
+        response = self.client.post('/orders/1/u/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/?next=/orders/1/u/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
