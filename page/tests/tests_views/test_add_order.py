@@ -30,3 +30,14 @@ class AddOrderTestCase(TestCase):
             self.assertEqual(response.context[0]['active_order_list'].model, ActiveOrder)
             for order in ActiveOrder.objects.all():
                 self.assertEqual(order.owner, self.groups['besart'])
+
+    def test_upload_file_without_authentication(self):
+        with open('data_for_tests.csv') as file:
+            response = self.client.post('/add/order/', {'name': 'fred', 'file': file}, follow=True)
+            self.assertEqual(response.templates[0].name, 'page/index.html')
+            self.assertEqual(response.templates[1].name, 'page/base.html')
+            self.assertEqual(len(response.redirect_chain), 1)
+            self.assertEqual(response.redirect_chain[0][0], '/?next=/add/order/')
+            self.assertEqual(response.redirect_chain[0][1], 302)
+            self.assertEqual(ActiveOrder.objects.count(), 0)
+            
