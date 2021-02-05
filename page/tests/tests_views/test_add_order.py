@@ -53,3 +53,11 @@ class AddOrderTestCase(TestCase):
             self.assertEqual(response.redirect_chain[0][1], 302)
             self.assertEqual(ActiveOrder.objects.count(), 0)
             self.assertEqual(len(response.context[0]['active_order_list']), 0)
+
+    def test_upload_file_get_method_without_authentication(self):
+        response = self.client.get('/add/order/', follow=True)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/?next=/add/order/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
