@@ -16,7 +16,7 @@ class AdminOrdersTestCase(TestCase):
             group.save()
             self.groups[name] = group
 
-    def test_admin_orders_without_authentication(self):
+    def test_admin_archive_without_authentication(self):
         response = self.client.get('/orders/archive/1/a/', follow=True)
         self.assertEqual(response.templates[0].name, 'page/index.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
@@ -26,7 +26,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/')
         self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
 
-    def test_admin_orders_with_authentication_as_user_without_groups(self):
+    def test_admin_archive_with_authentication_as_user_without_groups(self):
         self.client.force_login(self.user)
         response = self.client.get('/orders/archive/1/a/', follow=True)
         self.assertEqual(response.templates[0].name, 'page/index.html')
@@ -39,7 +39,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/')
         self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
 
-    def test_admin_orders_with_authentication_as_user_with_wrong_group(self):
+    def test_admin_archive_with_authentication_as_user_with_wrong_group(self):
         self.user.groups.add(self.groups['druk'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/archive/1/a/', follow=True)
@@ -107,7 +107,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/')
         self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
 
-    def test_admin_orders_with_authentication_as_user_with_administracja_group(self):
+    def test_admin_archive_with_authentication_as_user_with_administracja_group(self):
         self.user.groups.add(self.groups['administracja'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/archive/1/a/', follow=True)
@@ -121,7 +121,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/')
         self.assertIsInstance(response.wsgi_request.user, AnonymousUser)
 
-    def test_admin_orders_with_proper_authentication(self):
+    def test_admin_archive_with_proper_authentication(self):
         self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/archive/1/a/', follow=True)
@@ -162,7 +162,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertIsInstance(response.wsgi_request.user, User)
         self.user.groups.remove(self.groups['Pomoc techniczna'])
 
-    def test_admin_orders_with_administracja_and_druk_group(self):
+    def test_admin_archive_with_administracja_and_druk_group(self):
         self.user.groups.add(self.groups['administracja'], self.groups['druk'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/archive/1/a/', follow=True)
@@ -172,7 +172,7 @@ class AdminOrdersTestCase(TestCase):
         self.assertEqual(response.request['PATH_INFO'], '/orders/archive/1/a/')
         self.assertIsInstance(response.wsgi_request.user, User)
 
-    def test_admin_orders_with_2_as_current_page(self):
+    def test_admin_archive_with_2_as_current_page(self):
         self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
         self.client.force_login(self.user)
         response = self.client.get('/orders/archive/2/a/', follow=True)
