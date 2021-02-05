@@ -114,30 +114,39 @@ def add_order(request):
                     if len(errors) > 0:
                         return render(request, 'page/errors.html', {'errors': errors})
                     return redirect(admin_orders, current_page=1)
-            form = AddOrderForm(request.POST)
-            return render(request, 'page/add_order.html', {'form': form})
         elif request.user.groups.filter(name='druk').exists():
             return redirect(user_orders, current_page=1)
-    else:
-        return redirect(admin_orders, current_page=1)
+    return redirect(admin_orders, current_page=1)
 
 
 @login_required(login_url='')
 def user_orders(request, current_page):
-    page_len = 15
-    orders_amount = ActiveOrder.objects.exclude(order_status='4').exclude(order_status='5').count()
-    prev_page = current_page - 1
-    if orders_amount > current_page * page_len:
-        next_page = current_page + 1
+    if request.user.groups.filter(name='administracja') or request.user.groups.filter(name='druk'):
+        page_len = 15
+        orders = ActiveOrder.objects.exclude(order_status='4').exclude(order_status='5')
+        if request.user.groups.filter(name='administracja') and not request.user.groups.filter(name='Pomoc techniczna'):
+            try:
+                owner = request.user.groups.exclude(name='administracja')[0]
+                orders = orders.filter(owner=owner)
+            except IndexError:
+                return redirect(logout_user)
+        prev_page = current_page - 1
+        if orders.count() == 0 and current_page > 1:
+            return redirect(user_orders, current_page=1)
+        if orders.count() > current_page * page_len:
+            next_page = current_page + 1
+        else:
+            next_page = 0
+        availible_statuses = [(str(int(status[0])-1), status[1]) for status in ActiveOrder.order_statuses]
+        form = StatusForm(request.POST)
+        notification = len(Notification.objects.filter(user=request.user))
+        active_order_list = get_orders_page(request.user, page_len, current_page)
+        return render(request, 'page/user_orders.html', {'active_order_list': active_order_list, 'form': form,
+                                                         'availible_statuses': availible_statuses,
+                                                         'next_page': next_page, 'prev_page': prev_page,
+                                                         'notification': notification})
     else:
-        next_page = 0
-    availible_statuses = [(str(int(status[0])-1), status[1]) for status in ActiveOrder.order_statuses]
-    form = StatusForm(request.POST)
-    notification = len(Notification.objects.filter(user=request.user))
-    active_order_list = get_orders_page(request.user, page_len, current_page)
-    return render(request, 'page/user_orders.html', {'active_order_list': active_order_list, 'form': form,
-                                                     'availible_statuses': availible_statuses, 'next_page': next_page,
-                                                     'prev_page': prev_page, 'notification': notification})
+        return redirect(logout_user)
 
 
 @login_required(login_url='')

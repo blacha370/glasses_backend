@@ -31,6 +31,19 @@ class AddOrderTestCase(TestCase):
             for order in ActiveOrder.objects.all():
                 self.assertEqual(order.owner, self.groups['besart'])
 
+    def test_upload_file_get_method_with_authentication_as_proper_group_and_error_csv_file(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['Pomoc techniczna'])
+        with open('wrong_data_for_tests.csv') as file:
+            self.client.force_login(self.user)
+            response = self.client.post('/add/order/', {'name': 'fred', 'file': file}, follow=True)
+            self.assertEqual(response.templates[0].name, 'page/errors.html')
+            self.assertEqual(response.templates[1].name, 'page/base.html')
+            self.assertEqual(len(response.redirect_chain), 0)
+            self.assertEqual(ActiveOrder.objects.count(), 17)
+            self.assertEqual(response.context[0]['errors'][0], '[3] nieprawidłowy numer zamówienia: ')
+            for order in ActiveOrder.objects.all():
+                self.assertEqual(order.owner, self.groups['besart'])
+
     def test_upload_file_without_authentication(self):
         with open('data_for_tests.csv') as file:
             response = self.client.post('/add/order/', {'name': 'fred', 'file': file}, follow=True)
