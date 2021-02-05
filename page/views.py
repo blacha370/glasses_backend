@@ -104,8 +104,8 @@ def admin_archive(request, current_page):
 
 @login_required(login_url='')
 def add_order(request):
-    if request.user.groups.filter(name='administracja'):
-        if request.method == 'POST':
+    if request.method == 'POST':
+        if request.user.groups.filter(name='administracja'):
             form = AddOrderForm(request.POST, request.FILES)
             if form.is_valid():
                 if str(request.FILES['file'].name).endswith('.csv'):
@@ -114,10 +114,12 @@ def add_order(request):
                     if len(errors) > 0:
                         return render(request, 'page/errors.html', {'errors': errors})
                     return redirect(admin_orders, current_page=1)
-        form = AddOrderForm(request.POST)
-        return render(request, 'page/add_order.html', {'form': form})
-    elif request.user.groups.filter(name='druk').exists():
-        return redirect(user_orders, current_page=1)
+            form = AddOrderForm(request.POST)
+            return render(request, 'page/add_order.html', {'form': form})
+        elif request.user.groups.filter(name='druk').exists():
+            return redirect(user_orders, current_page=1)
+    else:
+        return redirect(admin_orders, current_page=1)
 
 
 @login_required(login_url='')
