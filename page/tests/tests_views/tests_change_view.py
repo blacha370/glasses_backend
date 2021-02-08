@@ -885,3 +885,15 @@ class ChangeTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
         self.assertEqual(ActiveOrder.objects.get(pk=1).order_status, '1')
+
+    def test_with_authentication_as_proper_group_post_method_without_value(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        response = self.client.post('/change/1/', follow=True, data={})
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/a/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(ActiveOrder.objects.get(pk=1).order_status, '1')
