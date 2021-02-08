@@ -375,3 +375,15 @@ class ChangeConfirmationTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'page/user_orders.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
         self.assertEqual(ActiveOrder.objects.get(pk=1).order_status, '1')
+
+    def test_delete_method(self):
+        self.user.groups.add(self.groups['druk'])
+        self.client.force_login(self.user)
+        response = self.client.delete('/change_confirmed/1/1', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/u/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/u/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/user_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(ActiveOrder.objects.get(pk=1).order_status, '1')
