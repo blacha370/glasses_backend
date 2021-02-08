@@ -28,3 +28,14 @@ class ChangeTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'page/index.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
         self.assertEqual(self.order.order_status, '1')
+
+    def test_with_not_existing_order(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        response = self.client.get('/change/2/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/a/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
