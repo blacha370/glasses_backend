@@ -461,3 +461,16 @@ class ChangeTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'page/index.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
         self.assertEqual(self.order.order_status, '1')
+
+    def test_without_authentication_group_post_method(self):
+        self.client.force_login(self.user)
+        response = self.client.post('/change/1/', follow=True, data={'value': '2'})
+        self.assertEqual(response.request['PATH_INFO'], '/')
+        self.assertEqual(len(response.redirect_chain), 2)
+        self.assertEqual(response.redirect_chain[0][0], '/o/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[1][0], '/')
+        self.assertEqual(response.redirect_chain[1][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(self.order.order_status, '1')
