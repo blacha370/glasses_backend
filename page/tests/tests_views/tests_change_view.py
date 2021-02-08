@@ -62,3 +62,15 @@ class ChangeTestCase(TestCase):
         response = self.client.get('/change/-1/', follow=True)
         self.assertEqual(response.request['PATH_INFO'], '/change/-1/')
         self.assertEqual(len(response.redirect_chain), 0)
+
+    def test_post_method_with_wrong_order_id(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        response = self.client.post('/change/a/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/change/a/')
+        self.assertEqual(len(response.redirect_chain), 0)
+
+        self.client.force_login(self.user)
+        response = self.client.post('/change/-1/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/change/-1/')
+        self.assertEqual(len(response.redirect_chain), 0)
