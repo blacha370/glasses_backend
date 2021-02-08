@@ -50,3 +50,15 @@ class ChangeTestCase(TestCase):
         self.assertEqual(response.redirect_chain[0][1], 302)
         self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
+
+    def test_get_method_with_wrong_order_id(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        response = self.client.get('/change/a/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/change/a/')
+        self.assertEqual(len(response.redirect_chain), 0)
+
+        self.client.force_login(self.user)
+        response = self.client.get('/change/-1/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/change/-1/')
+        self.assertEqual(len(response.redirect_chain), 0)
