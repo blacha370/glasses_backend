@@ -215,16 +215,22 @@ def change(request, order_id):
 
 @login_required(login_url='')
 def change_confirmation(request, order_id, order_status):
-    try:
-        order = ActiveOrder.objects.get(pk=order_id)
-    except ActiveOrder.DoesNotExist:
-        return redirect(user_orders, current_page=1)
-    if order.order_status == order_status:
-        status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
-                                   new_state=order.order_statuses[int(order.order_status)][0])
-        order.update_status()
-        status.save()
-        order.save()
+    if request.method == 'GET':
+        try:
+            order = ActiveOrder.objects.get(pk=order_id)
+        except ActiveOrder.DoesNotExist:
+            return redirect(user_orders, current_page=1)
+        if request.user.groups.filter(name='druk') or (request.user.groups.filter(
+                name='administracja') and (order.owner in request.user.groups.exclude(name='administracja') or
+                                           request.user.groups.filter(name='Pomoc techniczna'))):
+            if order.order_status == order_status:
+                status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
+                                           new_state=order.order_statuses[int(order.order_status)][0])
+                order.update_status()
+                status.save()
+                order.save()
+    if not request.user.groups.exclude(name='administracja'):
+        return redirect(logout_user)
     return redirect(user_orders, current_page=1)
 
 
@@ -238,6 +244,9 @@ def details(request, order_id):
         admin = False
         if request.user.groups.filter(name='administracja').exists():
             admin = True
+        elif order.owner not in request.groups.exclude(name='administracja') and not\
+                request.user.groups.filter(name='druk'):
+            return redirect(admin_orders, current_page=1)
         notification = len(Notification.objects.filter(user=request.user))
     except ActiveOrder.DoesNotExist:
         if request.user.groups.filter(name='administracja').exists():
