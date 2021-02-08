@@ -451,3 +451,13 @@ class ChangeTestCase(TestCase):
         self.assertEqual(ActiveOrder.objects.get(pk=1).order_status, '5')
         self.order.order_status = '1'
         self.order.save()
+
+    def test_without_authentication_post_method(self):
+        response = self.client.post('/change/1/', follow=True, data={'value': '2'})
+        self.assertEqual(response.request['PATH_INFO'], '/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/?next=/change/1/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(self.order.order_status, '1')
