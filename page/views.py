@@ -44,7 +44,6 @@ def logout_user(request):
 def admin_orders(request, current_page):
     if request.user.groups.filter(name='administracja'):
         page_len = 15
-        active_order_list = get_orders_page(request.user, page_len, current_page)
         try:
             owner = request.user.groups.exclude(name='administracja')[0]
         except IndexError:
@@ -174,36 +173,52 @@ def user_archive(request, current_page):
 
 @login_required(login_url='')
 def change(request, order_id):
-    order = get_object_or_404(ActiveOrder, pk=order_id)
-    if request.method == 'POST' and request.user.groups.filter(name='administracja'):
-        form = StatusForm(request.POST)
-        if form.is_valid():
-            if not order.order_status == form.cleaned_data['value']:
+    try:
+        order = ActiveOrder.objects.get(pk=order_id)
+    except ActiveOrder.DoesNotExist:
+        return redirect(admin_orders, current_page=1)
+    if request.method == 'POST':
+        if request.user.groups.filter(name='administracja') and (
+                order.owner in request.user.groups.all() or request.user.groups.filter(name='Pomoc techniczna')):
+            form = StatusForm(request.POST)
+            if form.is_valid():
+                if not order.order_status == form.cleaned_data['value']:
+                    status = OrderStatusChange(order=order, change_owner=request.user,
+                                               previous_state=order.order_status,
+                                               new_state=ActiveOrder.order_statuses[int(form.cleaned_data['value']) - 1][0])
+                    order.update_status(form.cleaned_data['value'])
+                    status.save()
+            return redirect(admin_orders, current_page=1)
+        elif request.user.groups.filter(name='administracja') and request.user.groups.exclude(name='administracja'):
+            return redirect(admin_orders, current_page=1)
+    elif request.method == 'GET':
+        if request.user.groups.filter(name='druk') or (request.user.groups.filter(name='administracja') and (
+                order.owner in request.user.groups.all() or request.user.groups.filter(name='Pomoc techniczna'))):
+            if order.order_status == '1':
                 status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
-                                           new_state=ActiveOrder.order_statuses[int(form.cleaned_data['value']) - 1][1])
-                order.update_status(form.cleaned_data['value'])
+                                           new_state=order.order_statuses[int(order.order_status)][0])
+                order.order_status = order.order_statuses[int(order.order_status)][0]
                 status.save()
-        return redirect(request.META.get('HTTP_REFERER'))
-    elif request.user.groups.filter(name='druk') or request.user.groups.filter(name='administracja'):
-        if order.order_status == '1':
-            status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
-                                       new_state=order.order_statuses[int(order.order_status)][0])
-            order.order_status = order.order_statuses[int(order.order_status)][0]
-            status.save()
-            order.save()
+                order.save()
+            elif int(order.order_status) < 3:
+                new_state = order.order_statuses[int(order.order_status)][0]
+                notification = len(Notification.objects.filter(user=request.user))
+                return render(request, 'page/update_alert.html', {'order': order, 'new_state': new_state,
+                                                                  'notification': notification})
             return redirect(user_orders, current_page=1)
-        elif order.order_status == '3':
-            return redirect(user_orders, current_page=1)
-        else:
-            new_state = order.order_statuses[int(order.order_status)][0]
-            notification = len(Notification.objects.filter(user=request.user))
-            return render(request, 'page/update_alert.html', {'order': order, 'new_state': new_state,
-                                                          'notification': notification})
+    if request.user.groups.filter(name='druk'):
+        return redirect(user_orders, current_page=1)
+    elif request.user.groups.filter(name='administracja') and request.user.groups.exclude(name='administracja'):
+        return redirect(admin_orders, current_page=1)
+    return redirect(logout_user)
 
 
 @login_required(login_url='')
 def change_confirmation(request, order_id, order_status):
-    order = get_object_or_404(ActiveOrder, pk=order_id)
+    try:
+        order = ActiveOrder.objects.get(pk=order_id)
+    except ActiveOrder.DoesNotExist:
+        return redirect(user_orders, current_page=1)
     if order.order_status == order_status:
         status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
                                    new_state=order.order_statuses[int(order.order_status)][0])
