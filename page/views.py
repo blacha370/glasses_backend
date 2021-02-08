@@ -1,10 +1,10 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import *
 from .forms import StatusForm, LoginForm, AddOrderForm, AddMessageForm, AddMessageExtForm
-from .functions import iterate_order_add, get_orders_page, get_page
+from .functions import iterate_order_add, get_orders_page, get_page, validate_acces
 
 
 def index(request):
@@ -192,8 +192,7 @@ def change(request, order_id):
         elif request.user.groups.filter(name='administracja') and request.user.groups.exclude(name='administracja'):
             return redirect(admin_orders, current_page=1)
     elif request.method == 'GET':
-        if request.user.groups.filter(name='druk') or (request.user.groups.filter(name='administracja') and (
-                order.owner in request.user.groups.all() or request.user.groups.filter(name='Pomoc techniczna'))):
+        if validate_acces(request.user, order, True):
             if order.order_status == '1':
                 status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
                                            new_state=order.order_statuses[int(order.order_status)][0])
@@ -220,9 +219,7 @@ def change_confirmation(request, order_id, order_status):
             order = ActiveOrder.objects.get(pk=order_id)
         except ActiveOrder.DoesNotExist:
             return redirect(user_orders, current_page=1)
-        if request.user.groups.filter(name='druk') or (request.user.groups.filter(
-                name='administracja') and (order.owner in request.user.groups.exclude(name='administracja') or
-                                           request.user.groups.filter(name='Pomoc techniczna'))):
+        if validate_acces(request.user, order, True):
             if order.order_status == order_status:
                 status = OrderStatusChange(order=order, change_owner=request.user, previous_state=order.order_status,
                                            new_state=order.order_statuses[int(order.order_status)][0])
@@ -244,14 +241,13 @@ def details(request, order_id):
         admin = False
         if request.user.groups.filter(name='administracja').exists():
             admin = True
-        elif order.owner not in request.groups.exclude(name='administracja') and not\
-                request.user.groups.filter(name='druk'):
+        if not validate_acces(request.user, order, True):
             return redirect(admin_orders, current_page=1)
         notification = len(Notification.objects.filter(user=request.user))
     except ActiveOrder.DoesNotExist:
         if request.user.groups.filter(name='administracja').exists():
             return redirect(admin_orders, current_page=1)
-        elif request.user.groups.filter(name='druk').exists():
+        else:
             return redirect(user_orders, current_page=1)
     else:
         return render(request, 'page/details.html', {'order': order, 'form': form, 'status': status,
