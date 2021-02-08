@@ -83,3 +83,21 @@ class DetailsTestCase(TestCase):
         self.assertEqual(len(response.redirect_chain), 0)
         self.assertEqual(response.templates[0].name, 'page/details.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
+
+    def test_with_authentication_as_wrong_group(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['besart'])
+        self.client.force_login(self.user)
+        response = self.client.get('/1/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+
+        self.user.groups.remove(self.groups['druk'])
+        self.user.groups.add(self.groups['kasia'])
+        self.client.force_login(self.user)
+        response = self.client.get('/1/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
