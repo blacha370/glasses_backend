@@ -120,3 +120,14 @@ def get_page(queryset, current_page, page_len):
     else:
         next_page = 0
     return prev_page, next_page
+
+
+def validate_acces(user, item, allow_druk=False):
+    if allow_druk and user.groups.filter(name='druk'):
+        return True
+    elif not user.is_authenticated:
+        return False
+    elif user.groups.filter(name='administracja'):
+        if item.owner in user.groups.exclude(name='administracja') or user.groups.filter(name='Pomoc techniczna'):
+            return True
+    return False
