@@ -32,3 +32,17 @@ class ArchiveThreadTestCase(TestCase):
         self.assertEqual(response.redirect_chain[0][1], 302)
         self.assertEqual(response.templates[0].name, 'page/index.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
+
+    def test_with_authentication_without_group(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/archive/1/1', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/')
+        self.assertEqual(len(response.redirect_chain), 3)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/a/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[1][0], '/o/')
+        self.assertEqual(response.redirect_chain[1][1], 302)
+        self.assertEqual(response.redirect_chain[2][0], '/')
+        self.assertEqual(response.redirect_chain[2][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
