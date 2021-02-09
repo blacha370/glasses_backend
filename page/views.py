@@ -257,21 +257,24 @@ def details(request, order_id):
 
 @login_required(login_url='')
 def inbox(request):
-    notifications = list()
-    for thread in Notification.objects.filter(user=request.user).values_list('thread'):
-        notifications.append(thread[0])
-    message_threads = set()
-    for group in request.user.groups.all():
-        for thread in MessagesThread.objects.filter(archive=False).filter(groups=group).order_by('subject'):
-            message_threads.add(thread)
-    if request.user.groups.filter(name='administracja') and request.user.groups.exclude(name='administracja'):
-        return render(request, 'page/admin_inbox.html', {'message_threads': message_threads,
-                                                         'notifications': notifications})
-    elif request.user.groups.filter(name='druk'):
-        return render(request, 'page/user_inbox.html', {'message_threads': message_threads,
-                                                        'notifications': notifications})
+    if request.method == 'GET':
+        notifications = list()
+        for thread in Notification.objects.filter(user=request.user).values_list('thread'):
+            notifications.append(thread[0])
+        message_threads = set()
+        for group in request.user.groups.all():
+            for thread in MessagesThread.objects.filter(archive=False).filter(groups=group).order_by('subject'):
+                message_threads.add(thread)
+        if request.user.groups.filter(name='administracja') and request.user.groups.exclude(name='administracja'):
+            return render(request, 'page/admin_inbox.html', {'message_threads': message_threads,
+                                                             'notifications': notifications})
+        elif request.user.groups.filter(name='druk'):
+            return render(request, 'page/user_inbox.html', {'message_threads': message_threads,
+                                                            'notifications': notifications})
+        else:
+            return redirect(logout_user)
     else:
-        return redirect(logout_user)
+        return redirect(admin_orders, current_page=1)
 
 
 @login_required(login_url='')
