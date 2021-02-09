@@ -153,3 +153,14 @@ class ArchiveInboxTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'page/archive_inbox.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
         self.assertEqual(len(response.context[0].dicts[3]['message_threads']), 0)
+
+    def test_post_method(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        response = self.client.post('/archive/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/a/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
