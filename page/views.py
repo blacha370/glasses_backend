@@ -276,11 +276,17 @@ def inbox(request):
 
 @login_required(login_url='')
 def archive_inbox(request):
-    message_threads = set()
-    for group in request.user.groups.all():
-        for thread in MessagesThread.objects.filter(archive=True).filter(groups=group).order_by('subject'):
-            message_threads.add(thread)
-    return render(request, 'page/archive_inbox.html', {'message_threads': message_threads})
+    if not request.user.groups.exclude(name='administracja') or not request.user.groups.filter(name='administracja')\
+            and not request.user.groups.filter(name='druk'):
+        return redirect(logout_user)
+    if request.method == 'GET':
+        message_threads = set()
+        for group in request.user.groups.all():
+            for thread in MessagesThread.objects.filter(archive=True).filter(groups=group).order_by('subject'):
+                message_threads.add(thread)
+        return render(request, 'page/archive_inbox.html', {'message_threads': message_threads})
+    else:
+        return redirect(admin_orders, current_page=1)
 
 
 @login_required(login_url='')
