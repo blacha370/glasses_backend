@@ -140,3 +140,14 @@ class InboxTestCase(TestCase):
         self.assertEqual(response.redirect_chain[0][1], 302)
         self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
+
+    def test_put_method(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        response = self.client.put('/inbox/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/orders/1/a/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/orders/1/a/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/admin_orders.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
