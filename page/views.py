@@ -264,12 +264,14 @@ def inbox(request):
     for group in request.user.groups.all():
         for thread in MessagesThread.objects.filter(archive=False).filter(groups=group).order_by('subject'):
             message_threads.add(thread)
-    if request.user.groups.filter(name='administracja'):
+    if request.user.groups.filter(name='administracja') and request.user.groups.exclude(name='administracja'):
         return render(request, 'page/admin_inbox.html', {'message_threads': message_threads,
                                                          'notifications': notifications})
     elif request.user.groups.filter(name='druk'):
         return render(request, 'page/user_inbox.html', {'message_threads': message_threads,
                                                         'notifications': notifications})
+    else:
+        return redirect(logout_user)
 
 
 @login_required(login_url='')
