@@ -294,24 +294,26 @@ def archive_inbox(request):
 
 @login_required(login_url='')
 def archive_thread(request, message_topic, current_page):
-    page_len = 10
-    current_notification = Notification.objects.filter(thread=message_topic)
-    for notification in current_notification:
-        notification.delete()
-    messages_thread = MessagesThread.objects.get(pk=message_topic)
-    msgs = Message.objects.filter(thread=messages_thread)
-    prev_page = current_page - 1
-    if msgs.count() > current_page * page_len:
-        next_page = current_page + 1
-    else:
-        next_page = 0
-    if msgs:
-        msgs = msgs[(current_page - 1) * page_len:current_page * page_len]
-        notification = len(Notification.objects.filter(user=request.user))
-        return render(request, 'page/archive_thread.html', {'messages_thread': msgs, 'prev_page': prev_page,
-                                                            'next_page': next_page, 'notification': notification})
-    else:
-        return redirect(archive_inbox)
+    if request.method == 'GET':
+        page_len = 10
+        current_notification = Notification.objects.filter(thread=message_topic)
+        for notification in current_notification:
+            notification.delete()
+        messages_thread = MessagesThread.objects.get(pk=message_topic)
+        if not messages_thread.groups.all().intersection(request.user.groups.all()):
+            return redirect(admin_orders, current_page=1)
+        msgs = Message.objects.filter(thread=messages_thread)
+        prev_page = current_page - 1
+        if msgs.count() > current_page * page_len:
+            next_page = current_page + 1
+        else:
+            next_page = 0
+        if msgs:
+            msgs = msgs[(current_page - 1) * page_len:current_page * page_len]
+            notification = len(Notification.objects.filter(user=request.user))
+            return render(request, 'page/archive_thread.html', {'messages_thread': msgs, 'prev_page': prev_page,
+                                                                'next_page': next_page, 'notification': notification})
+    return redirect(archive_inbox)
 
 
 @login_required(login_url='')
