@@ -152,3 +152,14 @@ class ArchiveThreadTestCase(TestCase):
         self.assertEqual(response.redirect_chain[0][1], 302)
         self.assertEqual(response.templates[0].name, 'page/archive_inbox.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
+
+    def test_put_method(self):
+        self.user.groups.add(self.groups['druk'])
+        self.client.force_login(self.user)
+        response = self.client.put('/archive/1/1', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/archive/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/archive/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/archive_inbox.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
