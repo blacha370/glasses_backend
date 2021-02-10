@@ -363,3 +363,13 @@ class AddNewMessageTestCase(TestCase):
         self.assertEqual(Message.objects.count(), 0)
         self.assertEqual(MessagesThread.objects.count(), 0)
         self.assertEqual(Notification.objects.count(), 0)
+
+    def test_put_method_without_authentication(self):
+        response = self.client.put('/message/add_new/', {'reciever': 'besart', 'message_subject': 'subject',
+                                                         'message_text': 'text'}, follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/?next=/message/add_new/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
