@@ -302,7 +302,7 @@ class MessageTestCase(TestCase):
     def test_str_method(self):
         message = Message(thread=self.thread, message_op=self.user, message_text='Text')
         message.save()
-        self.assertEqual(str(message), 'Subject')
+        self.assertEqual(str(message), 'Text')
 
     def test_delete_message(self):
         message = Message(thread=self.thread, message_op=self.user, message_text='Text')

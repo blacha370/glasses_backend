@@ -69,7 +69,7 @@ class Message(models.Model):
     archive = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.thread.subject
+        return self.message_text
 
     def delete_message(self):
         self.archive = True
