@@ -383,9 +383,14 @@ def add_message(request, thread_subject):
 
 @login_required(login_url='')
 def new_message(request):
-    form = AddMessageExtForm(request.POST)
-    notification = len(Notification.objects.filter(user=request.user))
-    return render(request, 'page/new_message.html', {'form': form, 'notification': notification})
+    if request.method == 'GET':
+        if request.user.groups.filter(name='druk') or (request.user.groups.filter(name='administracja') and
+                                                       request.user.groups.exclude(name='administracja')):
+            form = AddMessageExtForm(request.POST)
+            notification = len(Notification.objects.filter(user=request.user))
+            return render(request, 'page/new_message.html', {'form': form, 'notification': notification})
+        return redirect(logout_user)
+    return redirect(inbox)
 
 
 @login_required(login_url='')
