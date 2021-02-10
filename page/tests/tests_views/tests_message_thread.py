@@ -140,3 +140,16 @@ class ArchiveThreadTestCase(TestCase):
         self.assertEqual(len(response.context[1].dicts[3]['messages_thread']), 1)
         self.assertEqual(response.context[1].dicts[3]['next_page'], 0)
         self.assertEqual(response.context[1].dicts[3]['prev_page'], 1)
+
+    def test_without_messages(self):
+        for message in Message.objects.filter(thread=self.thread):
+            message.delete()
+        self.user.groups.add(self.groups['druk'])
+        self.client.force_login(self.user)
+        response = self.client.get('/message/thread/1/1', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/inbox/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/inbox/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/user_inbox.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
