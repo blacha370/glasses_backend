@@ -201,3 +201,17 @@ class AddMessageTestCase(TestCase):
         self.assertEqual(Message.objects.count(), 4)
         self.assertEqual(MessagesThread.objects.count(), 3)
         self.assertEqual(Notification.objects.count(), 2)
+
+    def test_get_method(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        response = self.client.get('/message/add/subject/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/inbox/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/inbox/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/admin_inbox.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(Message.objects.count(), 0)
+        self.assertEqual(MessagesThread.objects.count(), 0)
+        self.assertEqual(Notification.objects.count(), 0)
