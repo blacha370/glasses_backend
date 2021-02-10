@@ -395,7 +395,8 @@ def new_message(request):
 
 @login_required(login_url='')
 def add_new_message(request):
-    if request.method == 'POST':
+    if request.method == 'POST' and (request.user.groups.filter(name='druk') or (
+            request.user.groups.filter(name='administracja') and request.user.groups.exclude(name='administracja'))):
         form = AddMessageExtForm(request.POST)
         if form.is_valid():
             group_name = AddMessageExtForm.choices[int(form.cleaned_data['reciever']) - 1][1]
@@ -403,7 +404,7 @@ def add_new_message(request):
             groups = groups.union(Group.objects.filter(name=group_name))
             current = None
             for thread in MessagesThread.objects.filter(subject=form.cleaned_data['message_subject']):
-                if thread.groups.all() == groups:
+                if not thread.groups.all().difference(groups) and not groups.difference(thread.groups.all()):
                     current = thread
                     break
             if current is None:
@@ -414,8 +415,7 @@ def add_new_message(request):
                               message_text=form.cleaned_data['message_text'])
             message.save()
             messages.info(request, 'Wysłano nową wiadomość')
-            users = User.objects.filter(
-                groups__name=group_name)
+            users = User.objects.filter(groups__name=group_name)
             for user in users:
                 if request.user != user:
                     notification = Notification.objects.get_or_create(user=user, thread=current)
