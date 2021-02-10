@@ -203,3 +203,16 @@ class AddNewMessageTestCase(TestCase):
         self.assertEqual(response.redirect_chain[0][1], 302)
         self.assertEqual(response.templates[0].name, 'page/index.html')
         self.assertEqual(response.templates[1].name, 'page/base.html')
+
+    def test_get_method_with_authentication_without_group(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/message/add_new/', follow=True)
+        self.assertEqual(len(response.redirect_chain), 3)
+        self.assertEqual(response.redirect_chain[0][0], '/inbox/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[1][0], '/o/')
+        self.assertEqual(response.redirect_chain[1][1], 302)
+        self.assertEqual(response.redirect_chain[2][0], '/')
+        self.assertEqual(response.redirect_chain[2][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
