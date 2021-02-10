@@ -342,6 +342,14 @@ class AddMessageTestCase(TestCase):
         self.assertEqual(MessagesThread.objects.count(), 1)
         self.assertEqual(Notification.objects.count(), 0)
 
+    def test_add_message_with_none_as_message_text(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.client.force_login(self.user)
+        self.assertRaises(TypeError, self.client.post, '/message/add/subject/', {'message_text': None}, follow=True)
+        self.assertEqual(Message.objects.count(), 0)
+        self.assertEqual(MessagesThread.objects.count(), 0)
+        self.assertEqual(Notification.objects.count(), 0)
+
     def test_get_method(self):
         self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
         self.client.force_login(self.user)
