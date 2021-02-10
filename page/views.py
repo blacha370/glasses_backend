@@ -318,25 +318,31 @@ def archive_thread(request, message_topic, current_page):
 
 @login_required(login_url='')
 def message_thread(request, message_topic, current_page):
-    page_len = 10
-    current_notification = Notification.objects.filter(user=request.user,
-                                                       thread=message_topic)
-    if len(current_notification):
-        current_notification.delete()
-    messages_thread = Message.objects.filter(thread=message_topic)
-    messages_thread = messages_thread.order_by('pk').reverse()
-    prev_page = current_page - 1
-    if len(messages_thread) > current_page * page_len:
-        next_page = current_page + 1
-    else:
-        next_page = 0
-    if messages_thread:
-        messages_thread = messages_thread[(current_page - 1) * page_len:current_page * page_len]
-        form = AddMessageForm(request.POST)
-        notification = len(Notification.objects.filter(user=request.user))
-        return render(request, 'page/message.html', {'messages_thread': messages_thread, 'form': form,
-                                                     'prev_page': prev_page, 'next_page': next_page,
-                                                     'notification': notification})
+    if request.method == 'GET':
+        page_len = 10
+        current_notification = Notification.objects.filter(user=request.user,
+                                                           thread=message_topic)
+        thread = MessagesThread.objects.get(pk=message_topic)
+        if not thread.groups.all().intersection(request.user.groups.all()):
+            return redirect(admin_orders, current_page=1)
+        if len(current_notification):
+            current_notification.delete()
+        messages_thread = Message.objects.filter(thread=message_topic)
+        if messages_thread.count() == 0:
+            return redirect(inbox)
+        messages_thread = messages_thread.order_by('pk').reverse()
+        prev_page = current_page - 1
+        if len(messages_thread) > current_page * page_len:
+            next_page = current_page + 1
+        else:
+            next_page = 0
+        if messages_thread:
+            messages_thread = messages_thread[(current_page - 1) * page_len:current_page * page_len]
+            form = AddMessageForm(request.POST)
+            notification = len(Notification.objects.filter(user=request.user))
+            return render(request, 'page/message.html', {'messages_thread': messages_thread, 'form': form,
+                                                         'prev_page': prev_page, 'next_page': next_page,
+                                                         'notification': notification})
     else:
         return redirect(inbox)
 
