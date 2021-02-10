@@ -3,17 +3,15 @@ from django.contrib.auth.models import User, Group
 from ...models import MessagesThread, Message, Notification
 
 
-class ArchiveThreadTestCase(TestCase):
+class MessageThreadTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User(username='User', password='password')
         self.user.save()
         names = ['administracja', 'druk', '4dich', 'besart', 'kasia', 'Pomoc techniczna']
-        self.groups = {}
-        for name in names:
-            group = Group(name=name)
+        self.groups = {name: Group(name=name) for name in names}
+        for group in self.groups.values():
             group.save()
-            self.groups[name] = group
         self.thread = MessagesThread(subject='subject')
         self.thread.save()
         self.thread.groups.add(self.groups['4dich'], self.groups['druk'])
