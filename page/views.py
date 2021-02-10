@@ -354,10 +354,13 @@ def add_message(request, thread_subject):
         if form.is_valid():
             group_name = 'druk'
             groups = request.user.groups.exclude(name='administracja')
+            if groups.count() == 0 or (Group.objects.get(name='druk') not in request.user.groups.all() and
+                                       Group.objects.get(name='administracja') not in request.user.groups.all()):
+                return redirect(inbox)
             groups = groups.union(Group.objects.filter(name=group_name))
             current = None
             for thread in MessagesThread.objects.filter(subject=thread_subject):
-                if thread.groups.all() == groups:
+                if not thread.groups.all().difference(groups) and not groups.difference(thread.groups.all()):
                     current = thread
                     break
             if current is None:
@@ -374,7 +377,8 @@ def add_message(request, thread_subject):
                 if request.user != user:
                     notification = Notification.objects.get_or_create(user=user, thread=current)
                     notification[0].save()
-                return redirect(request.META.get('HTTP_REFERER'))
+            return redirect(inbox)
+    return redirect(inbox)
 
 
 @login_required(login_url='')
