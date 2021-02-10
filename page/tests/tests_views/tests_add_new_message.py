@@ -194,3 +194,12 @@ class AddNewMessageTestCase(TestCase):
         self.assertEqual(Message.objects.count(), 5)
         self.assertEqual(MessagesThread.objects.count(), 4)
         self.assertEqual(Notification.objects.count(), 4)
+
+    def test_get_method_without_authentication(self):
+        response = self.client.get('/message/add_new/', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/?next=/message/add_new/')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
