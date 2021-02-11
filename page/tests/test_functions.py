@@ -18,4 +18,7 @@ class ValidateAccessTestCase(TestCase):
         self.order.save()
 
     def test_without_authenticated_user(self):
-        self.assertFalse(validate_acces(AnonymousUser(), self.order))
+        self.assertFalse(validate_access(AnonymousUser(), self.order))
+
+    def test_with_authentication_without_group(self):
+        self.assertFalse(validate_access(self.user, self.order))
