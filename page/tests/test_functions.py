@@ -38,3 +38,15 @@ class ValidateAccessTestCase(TestCase):
         self.user.groups.remove(self.groups['besart'])
         self.user.groups.add(self.groups['kasia'])
         self.assertFalse(validate_access(self.user, self.order))
+
+    def test_with_authentication_with_proper_group(self):
+        self.user.groups.add(self.groups['administracja'], self.groups['4dich'])
+        self.assertTrue(validate_access(self.user, self.order))
+
+        self.user.groups.remove(self.groups['4dich'])
+        self.user.groups.add(self.groups['Pomoc techniczna'])
+        self.assertTrue(validate_access(self.user, self.order))
+
+        self.user.groups.remove(self.groups['administracja'], self.groups['Pomoc techniczna'])
+        self.user.groups.add(self.groups['druk'])
+        self.assertTrue(validate_access(self.user, self.order, True))
