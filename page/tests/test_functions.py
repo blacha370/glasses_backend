@@ -22,3 +22,19 @@ class ValidateAccessTestCase(TestCase):
 
     def test_with_authentication_without_group(self):
         self.assertFalse(validate_access(self.user, self.order))
+
+    def test_with_authentication_with_wrong_group(self):
+        self.user.groups.add(self.groups['druk'])
+        self.assertFalse(validate_access(self.user, self.order))
+
+        self.user.groups.remove(self.groups['druk'])
+        self.user.groups.add(self.groups['administracja'])
+        self.assertFalse(validate_access(self.user, self.order))
+
+        self.user.groups.add(self.groups['besart'])
+
+        self.assertFalse(validate_access(self.user, self.order))
+
+        self.user.groups.remove(self.groups['besart'])
+        self.user.groups.add(self.groups['kasia'])
+        self.assertFalse(validate_access(self.user, self.order))
