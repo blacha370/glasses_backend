@@ -647,3 +647,17 @@ class DeleteMessageThreadTestCase(TestCase):
         self.assertEqual(Message.objects.filter(archive=True).count(), 0)
         self.assertEqual(Message.objects.filter(archive=False).count(), 5)
         self.assertEqual(Notification.objects.count(), 1)
+
+    def test_delete_method_without_authentication(self):
+        response = self.client.delete('/message/delete/1', follow=True)
+        self.assertEqual(response.request['PATH_INFO'], '/')
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], '/?next=/message/delete/1')
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.templates[0].name, 'page/index.html')
+        self.assertEqual(response.templates[1].name, 'page/base.html')
+        self.assertEqual(MessagesThread.objects.filter(archive=True).count(), 0)
+        self.assertEqual(MessagesThread.objects.filter(archive=False).count(), 1)
+        self.assertEqual(Message.objects.filter(archive=True).count(), 0)
+        self.assertEqual(Message.objects.filter(archive=False).count(), 5)
+        self.assertEqual(Notification.objects.count(), 1)
