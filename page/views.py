@@ -426,12 +426,17 @@ def add_new_message(request):
 
 @login_required(login_url='')
 def delete_message_thread(request, thread_id):
-    if request.user.groups.filter(name='administracja'):
+    if request.user.groups.filter(name='administracja') and request.method == 'GET':
         try:
             thread = MessagesThread.objects.get(pk=thread_id)
-            thread.delete_thread()
-            messages.info(request, 'Usunięto wiadomość')
+            if thread.groups.all().intersection(request.user.groups.all()):
+                notifications = Notification.objects.filter(thread=thread)
+                for notification in notifications:
+                    notification.delete()
+                thread.delete_thread()
+                messages.info(request, 'Usunięto wiadomość')
+            else:
+                messages.info(request, 'Brak uprawnień do usunięcia wiadomości')
         except MessagesThread.DoesNotExist:
             messages.info(request, 'Błąd usuwania wiadomości')
-            return redirect(inbox)
     return redirect(inbox)
